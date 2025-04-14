@@ -6,12 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>551</width>
     <height>300</height>
    </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Ustawienia Połączenia</string>
   </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -19,10 +16,12 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="windowTitle">
+   <string>Ustawienia Połączenia</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QFormLayout" name="formLayout">
-     <!-- IP -->
      <item row="0" column="0">
       <widget class="QLabel" name="labelIp">
        <property name="text">
@@ -34,11 +33,11 @@
       <layout class="QHBoxLayout" name="ipLayout">
        <item>
         <widget class="QLineEdit" name="ipPart1">
-         <property name="maxLength">
-          <number>3</number>
-         </property>
          <property name="inputMask">
           <string>000</string>
+         </property>
+         <property name="maxLength">
+          <number>3</number>
          </property>
         </widget>
        </item>
@@ -51,11 +50,11 @@
        </item>
        <item>
         <widget class="QLineEdit" name="ipPart2">
-         <property name="maxLength">
-          <number>3</number>
-         </property>
          <property name="inputMask">
           <string>000</string>
+         </property>
+         <property name="maxLength">
+          <number>3</number>
          </property>
         </widget>
        </item>
@@ -68,11 +67,11 @@
        </item>
        <item>
         <widget class="QLineEdit" name="ipPart3">
-         <property name="maxLength">
-          <number>3</number>
-         </property>
          <property name="inputMask">
           <string>000</string>
+         </property>
+         <property name="maxLength">
+          <number>3</number>
          </property>
         </widget>
        </item>
@@ -85,17 +84,16 @@
        </item>
        <item>
         <widget class="QLineEdit" name="ipPart4">
-         <property name="maxLength">
-          <number>3</number>
-         </property>
          <property name="inputMask">
           <string>000</string>
+         </property>
+         <property name="maxLength">
+          <number>3</number>
          </property>
         </widget>
        </item>
       </layout>
      </item>
-     <!-- Port -->
      <item row="1" column="0">
       <widget class="QLabel" name="labelPort">
        <property name="text">
@@ -106,7 +104,6 @@
      <item row="1" column="1">
       <widget class="QLineEdit" name="lineEditPort"/>
      </item>
-     <!-- Combo -->
      <item row="2" column="0">
       <widget class="QLabel" name="labelCombo">
        <property name="text">
@@ -115,18 +112,17 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QComboBox" name="comboBox"/>
+      <widget class="QComboBox" name="comboBoxTryb"/>
      </item>
     </layout>
    </item>
-   <!-- Buttons -->
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
@@ -139,12 +135,32 @@
    <signal>accepted()</signal>
    <receiver>DialogOnline</receiver>
    <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
    <receiver>DialogOnline</receiver>
    <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
  </connections>
 </ui>

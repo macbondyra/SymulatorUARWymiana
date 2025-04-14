@@ -18,6 +18,11 @@ public:
 
 private:
     Ui::DialogOnline *ui;
+    QString getIp();
+    quint16 getPort();
+    enum class trybPracy{Regulator,Obiekt};
+    trybPracy getTryb();
+
 
 };
 
