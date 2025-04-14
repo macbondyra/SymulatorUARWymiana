@@ -1,16 +1,18 @@
 #define _CRT_SECURE_NO_WARNINGS
 #pragma once
-#include <vector>
-#include <deque>
-#include <random>
-#include <iostream>
 #include <algorithm>
-#include <fstream>
 #include <cmath>
-#include <sstream>
+#include <deque>
+#include <fstream>
+#include <iostream>
 #include <memory>
+#include <random>
+#include <sstream>
+#include <vector>
+#include "Nadajnik.h"
 
-class ARXModel {
+class ARXModel
+{
 private:
     std::vector<double> A;
     std::vector<double> B;
@@ -22,8 +24,11 @@ private:
     int opoznienie = 1;
 
 public:
-    ARXModel(const std::vector<double>& a, const std::vector<double>& b, double szum = 0.0)
-        : A(a), B(b), sigma(szum) {
+    ARXModel(const std::vector<double> &a, const std::vector<double> &b, double szum = 0.0)
+        : A(a)
+        , B(b)
+        , sigma(szum)
+    {
         if (sigma > 0.0) {
             dystrybucja = std::make_unique<std::normal_distribution<double>>(0.0, sigma);
         } else {
@@ -34,16 +39,22 @@ public:
         y_hist = std::deque<double>(maxSize, 0.0);
     }
 
-    ARXModel() : sigma(0.0) {
-        A = { 0.0 };
-        B = { 0.0 };
+    ARXModel()
+        : sigma(0.0)
+    {
+        A = {0.0};
+        B = {0.0};
         dystrybucja = nullptr;
         size_t maxSize = std::max(A.size(), B.size()) + opoznienie;
         u_hist = std::deque<double>(maxSize, 0.0);
         y_hist = std::deque<double>(maxSize, 0.0);
     }
 
-    void setModel(const std::vector<double>& a, const std::vector<double>& b, double szum = 0.0, int opoznienieTransportowe = 1) {
+    void setModel(const std::vector<double> &a,
+                  const std::vector<double> &b,
+                  double szum = 0.0,
+                  int opoznienieTransportowe = 1)
+    {
         A = a;
         B = b;
         sigma = szum;
@@ -60,7 +71,8 @@ public:
         y_hist = std::deque<double>(maxSize, 0.0);
     }
 
-    void updateCoefficients(const std::vector<double>& newA, const std::vector<double>& newB) {
+    void updateCoefficients(const std::vector<double> &newA, const std::vector<double> &newB)
+    {
         A = newA;
         B = newB;
         size_t maxSize = std::max(A.size(), B.size()) + opoznienie;
@@ -68,21 +80,28 @@ public:
         y_hist = std::deque<double>(maxSize, 0.0);
     }
 
-    std::string get_lastA() const {
-        if (A.empty()) return "0.0";
+    std::string get_lastA() const
+    {
+        if (A.empty())
+            return "0.0";
         std::stringstream sa;
-        for (auto i : A) sa << i << ", ";
+        for (auto i : A)
+            sa << i << ", ";
         return sa.str();
     }
 
-    std::string get_lastB() const {
-        if (B.empty()) return "0.0";
+    std::string get_lastB() const
+    {
+        if (B.empty())
+            return "0.0";
         std::stringstream sb;
-        for (auto i : B) sb << i << ", ";
+        for (auto i : B)
+            sb << i << ", ";
         return sb.str();
     }
 
-    double krok(double input) {
+    double krok(double input)
+    {
         u_hist.pop_front();
         u_hist.push_back(input);
 
@@ -109,32 +128,40 @@ public:
         return y_k;
     }
 
-    void zapiszText(const std::string& nazwaPliku) {
+    void zapiszText(const std::string &nazwaPliku)
+    {
         std::ofstream ofs(nazwaPliku);
-        if (!ofs) return;
+        if (!ofs)
+            return;
 
         ofs << A.size() << "\n";
-        for (const auto& a : A) ofs << a << "\n";
+        for (const auto &a : A)
+            ofs << a << "\n";
         ofs << B.size() << "\n";
-        for (const auto& b : B) ofs << b << "\n";
+        for (const auto &b : B)
+            ofs << b << "\n";
         ofs << 0.0 << "\n" << sigma << "\n";
     }
 
-    void wczytajText(const std::string& nazwaPliku) {
+    void wczytajText(const std::string &nazwaPliku)
+    {
         std::ifstream ifs(nazwaPliku);
-        if (!ifs) return;
+        if (!ifs)
+            return;
 
         size_t rozmiarA, rozmiarB;
         double wartA, wartB;
         ifs >> rozmiarA;
-        A.clear(); A.reserve(rozmiarA);
+        A.clear();
+        A.reserve(rozmiarA);
         for (size_t i = 0; i < rozmiarA; ++i) {
             ifs >> wartA;
             A.push_back(wartA);
         }
 
         ifs >> rozmiarB;
-        B.clear(); B.reserve(rozmiarB);
+        B.clear();
+        B.reserve(rozmiarB);
         for (size_t i = 0; i < rozmiarB; ++i) {
             ifs >> wartB;
             B.push_back(wartB);
@@ -143,10 +170,13 @@ public:
         double mean, stddev;
         ifs >> mean >> stddev;
         sigma = stddev;
-        dystrybucja = (sigma > 0.0) ? std::make_unique<std::normal_distribution<double>>(mean, sigma) : nullptr;
+        dystrybucja = (sigma > 0.0)
+                          ? std::make_unique<std::normal_distribution<double>>(mean, sigma)
+                          : nullptr;
     }
 
-    void reset() {
+    void reset()
+    {
         //A.clear();
         //B.clear();
         u_hist.clear();
@@ -157,13 +187,13 @@ public:
     }
 };
 
-template <typename T>
-T filtr(T wartosc, T dolny, T gorny) {
+template<typename T>
+T filtr(T wartosc, T dolny, T gorny)
+{
     return std::max(dolny, std::min(wartosc, gorny));
 }
 
-enum class rodzajeWartosci
-{
+enum class rodzajeWartosci {
     skok = 0,
     sinus = 1,
     kwadrat = 2,
@@ -172,7 +202,10 @@ enum class rodzajeWartosci
 class WartZadana
 {
 public:
-    WartZadana(rodzajeWartosci typ = rodzajeWartosci::skok, double maximum = 1, int cykl = 20, int wyp = 100)
+    WartZadana(rodzajeWartosci typ = rodzajeWartosci::skok,
+               double maximum = 1,
+               int cykl = 20,
+               int wyp = 100)
     {
         rodzaj = typ;
         min = 0;
@@ -181,7 +214,10 @@ public:
         wypelnienie = wyp;
     };
 
-    void setWart(rodzajeWartosci typ = rodzajeWartosci::skok, double maximum = 1, int cykl = 20, int wyp = 100)
+    void setWart(rodzajeWartosci typ = rodzajeWartosci::skok,
+                 double maximum = 1,
+                 int cykl = 20,
+                 int wyp = 100)
     {
         rodzaj = typ;
         min = 0;
@@ -192,31 +228,21 @@ public:
 
     double obliczWartosc(int krok)
     {
-        if (rodzaj == rodzajeWartosci::skok)
-        {
+        if (rodzaj == rodzajeWartosci::skok) {
             return max;
-        }
-        else if (rodzaj == rodzajeWartosci::kwadrat)
-        {
-            if (krok % (okres/2) == 0)
-            {
+        } else if (rodzaj == rodzajeWartosci::kwadrat) {
+            if (krok % (okres / 2) == 0) {
                 minMax = !minMax;
             }
-            if (minMax == 0)
-            {
+            if (minMax == 0) {
                 return min;
-            }
-            else
-            {
-                if((krok % (okres/2)) > (okres/2*0.01*wypelnienie))
+            } else {
+                if ((krok % (okres / 2)) > (okres / 2 * 0.01 * wypelnienie))
                     return min;
                 else
                     return max;
-
             }
-        }
-        else
-        {
+        } else {
             double amplituda = (max - min) / 2;
             double przesuniecie = (max + min) / 2;
             double kat = (static_cast<double>(krok) / okres) * 2.0 * 3.14;
@@ -224,29 +250,29 @@ public:
         }
     }
 
-    void zapiszText(const std::string& filename) {
+    void zapiszText(const std::string &filename)
+    {
         std::ofstream ofs(filename);
-        if (!ofs) return;
+        if (!ofs)
+            return;
         ofs << min << "\n" << max << "\n" << okres << "\n" << static_cast<int>(rodzaj) << "\n";
-
     }
 
-    void wczytajText(const std::string& nazwaPliku) {
+    void wczytajText(const std::string &nazwaPliku)
+    {
         std::ifstream ifs(nazwaPliku);
-        if (!ifs) return;
+        if (!ifs)
+            return;
         int typ;
         ifs >> min >> max >> okres >> typ;
         rodzaj = static_cast<rodzajeWartosci>(typ);
     }
 
-    int get_rodzajLiczba() const { return (int)rodzaj;}
-    double get_max() const{return max;}
-    int get_okres() const{return okres;}
+    int get_rodzajLiczba() const { return (int) rodzaj; }
+    double get_max() const { return max; }
+    int get_okres() const { return okres; }
 
-    void reset(){
-        setWart(rodzajeWartosci::skok,0.0,0);
-    }
-
+    void reset() { setWart(rodzajeWartosci::skok, 0.0, 0); }
 
 private:
     rodzajeWartosci rodzaj = rodzajeWartosci::skok;
@@ -256,12 +282,10 @@ private:
     int wypelnienie = 50;
 };
 
-enum class TrybCalkowania {
-    PRE_SUM,
-    POST_SUM
-};
+enum class TrybCalkowania { PRE_SUM, POST_SUM };
 
-class PIDController {
+class PIDController
+{
 private:
     double kp, ki, kd;
     double calka, bladPoprzedzajacy;
@@ -273,31 +297,48 @@ private:
     double maxCalka;
     double maxPochodna;
     TrybCalkowania integralMode;
-
+    Nadajnik nadawacz;
 public:
-    PIDController(double kp, double ki, double kd,
-                  double dolnyLimit = -1.0, double gornyLimit = 1.0,
+    PIDController(double kp,
+                  double ki,
+                  double kd,
+                  double dolnyLimit = -1.0,
+                  double gornyLimit = 1.0,
                   TrybCalkowania mode = TrybCalkowania::POST_SUM)
-        : kp(kp), ki(ki), kd(kd),
-        calka(0.0), bladPoprzedzajacy(0.0),
-        dolnyLimit(dolnyLimit), gornyLimit(gornyLimit),
-        flagaPrzeciwNasyceniowa(false),
-        blad(0.0), pochodna(0.0), wyjscie(0.0),
-        maxCalka(10.0), maxPochodna(10.0),
-        integralMode(mode)
-    {
-    }
+        : kp(kp)
+        , ki(ki)
+        , kd(kd)
+        , calka(0.0)
+        , bladPoprzedzajacy(0.0)
+        , dolnyLimit(dolnyLimit)
+        , gornyLimit(gornyLimit)
+        , flagaPrzeciwNasyceniowa(false)
+        , blad(0.0)
+        , pochodna(0.0)
+        , wyjscie(0.0)
+        , maxCalka(10.0)
+        , maxPochodna(10.0)
+        , integralMode(mode)
+        , nadawacz()
+    {}
 
     PIDController()
-        : kp(0.0), ki(0.0), kd(0.0),
-        calka(0.0), bladPoprzedzajacy(0.0),
-        dolnyLimit(-1.0), gornyLimit(1.0),
-        flagaPrzeciwNasyceniowa(false),
-        blad(0.0), pochodna(0.0), wyjscie(0.0),
-        maxCalka(10.0), maxPochodna(10.0),
-        integralMode(TrybCalkowania::POST_SUM)
-    {
-    }
+        : kp(0.0)
+        , ki(0.0)
+        , kd(0.0)
+        , calka(0.0)
+        , bladPoprzedzajacy(0.0)
+        , dolnyLimit(-1.0)
+        , gornyLimit(1.0)
+        , flagaPrzeciwNasyceniowa(false)
+        , blad(0.0)
+        , pochodna(0.0)
+        , wyjscie(0.0)
+        , maxCalka(10.0)
+        , maxPochodna(10.0)
+        , integralMode(TrybCalkowania::POST_SUM)
+        , nadawacz()
+    {}
 
     double get_kp() const { return kp; }
     double get_ki() const { return ki; }
@@ -305,7 +346,8 @@ public:
     double get_dolnyLimit() const { return dolnyLimit; }
     double get_gornyLimit() const { return gornyLimit; }
 
-    double getCalka() const {
+    double getCalka() const
+    {
         return (integralMode == TrybCalkowania::PRE_SUM) ? calka : ki * calka;
     }
 
@@ -313,27 +355,29 @@ public:
     double getPochodna() const { return kd * pochodna; }
     double getWyjscie() const { return wyjscie; }
 
-    void ustawLimity(double lower, double upper) {
+    void ustawLimity(double lower, double upper)
+    {
         dolnyLimit = lower;
         gornyLimit = upper;
     }
 
-    void setKontroler(double _kp, double _ki, double _kd) {
+    void setKontroler(double _kp, double _ki, double _kd)
+    {
         kp = _kp;
         ki = _ki;
         kd = _kd;
     }
 
-    void setFlagaPrzeciwnasyceniowa(bool flag) {
-        flagaPrzeciwNasyceniowa = flag;
-    }
+    void setFlagaPrzeciwnasyceniowa(bool flag) { flagaPrzeciwNasyceniowa = flag; }
 
-    void setTrybCalkowania(TrybCalkowania mode) {
+    void setTrybCalkowania(TrybCalkowania mode)
+    {
         integralMode = mode;
         reset();
     }
 
-    void reset() {
+    void reset()
+    {
         calka = 0.0;
         bladPoprzedzajacy = 0.0;
         blad = 0.0;
@@ -341,8 +385,9 @@ public:
         wyjscie = 0.0;
     }
 
-    template <typename T>
-    T filtr(T value, T lower, T upper) {
+    template<typename T>
+    T filtr(T value, T lower, T upper)
+    {
         return std::max(lower, std::min(value, upper));
     }
 
@@ -370,8 +415,8 @@ public:
 
         bladPoprzedzajacy = blad;
 
-        double integralContribution =
-            (integralMode == TrybCalkowania::PRE_SUM) ? calka : (ki * calka);
+        double integralContribution = (integralMode == TrybCalkowania::PRE_SUM) ? calka
+                                                                                : (ki * calka);
 
         wyjscie = kp * blad + integralContribution + kd * pochodna;
 
@@ -382,9 +427,11 @@ public:
         return wyjscie;
     }
 
-    void zapiszText(const std::string& filename) {
+    void zapiszText(const std::string &filename)
+    {
         std::ofstream ofs(filename);
-        if (!ofs) return;
+        if (!ofs)
+            return;
         ofs << kp << "\n" << ki << "\n" << kd << "\n";
         ofs << dolnyLimit << "\n" << gornyLimit << "\n";
         ofs << flagaPrzeciwNasyceniowa << "\n";
@@ -392,9 +439,11 @@ public:
         ofs << static_cast<int>(integralMode) << "\n";
     }
 
-    void wczytajText(const std::string& nazwaPliku) {
+    void wczytajText(const std::string &nazwaPliku)
+    {
         std::ifstream ifs(nazwaPliku);
-        if (!ifs) return;
+        if (!ifs)
+            return;
         int modeInt;
         ifs >> kp >> ki >> kd;
         ifs >> dolnyLimit >> gornyLimit;
@@ -404,26 +453,24 @@ public:
         integralMode = static_cast<TrybCalkowania>(modeInt);
     }
 
-    TrybCalkowania getTrybCalkowania() const {
-        return integralMode;
-    }
+    TrybCalkowania getTrybCalkowania() const { return integralMode; }
 };
 
 class UkladSterowania
 {
 public:
-
-    UkladSterowania()
-    {};
-    ~UkladSterowania()
-    {};
+    UkladSterowania() {};
+    ~UkladSterowania() {};
     void setPID(double kp, double ki, double kd, double dolnyLimit = -1.0, double gornyLimit = 1.0)
     {
         kontroler.setKontroler(kp, ki, kd);
         kontroler.ustawLimity(dolnyLimit, gornyLimit);
     }
 
-    void setARX(const std::vector<double>& a, const std::vector<double>& b, double szum = 0.01, int opoznienie = 1)
+    void setARX(const std::vector<double> &a,
+                const std::vector<double> &b,
+                double szum = 0.01,
+                int opoznienie = 1)
     {
         model.setModel(a, b, szum, opoznienie);
     }
@@ -432,17 +479,18 @@ public:
     {
         wartosc.setWart(rodzaj, max, okres, wyp);
     }
-    void setFiltr(bool filtr)
-    {
-        kontroler.setFlagaPrzeciwnasyceniowa(filtr);
-    }
-    void zapiszPlik(const std::string& nazwaPlikuARX, const std::string& nazwaPlikuPID, const std::string& nazwaPlikuWartosc)
+    void setFiltr(bool filtr) { kontroler.setFlagaPrzeciwnasyceniowa(filtr); }
+    void zapiszPlik(const std::string &nazwaPlikuARX,
+                    const std::string &nazwaPlikuPID,
+                    const std::string &nazwaPlikuWartosc)
     {
         model.zapiszText(nazwaPlikuARX);
         kontroler.zapiszText(nazwaPlikuPID);
         wartosc.zapiszText(nazwaPlikuWartosc);
     }
-    void wczytajPlik(const std::string& nazwaPlikuARX, const std::string& nazwaPlikuPID, const std::string& nazwaPlikuWartosc)
+    void wczytajPlik(const std::string &nazwaPlikuARX,
+                     const std::string &nazwaPlikuPID,
+                     const std::string &nazwaPlikuWartosc)
     {
         model.wczytajText(nazwaPlikuARX);
         kontroler.wczytajText(nazwaPlikuPID);
@@ -450,7 +498,6 @@ public:
     }
     double symulacja(size_t krok)
     {
-
         wartoscZadana = wartosc.obliczWartosc(krok);
         double sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
         wartoscProcesu = model.krok(sygnalKontrolny);
@@ -464,43 +511,38 @@ public:
         return obliczone;
     }
 
-    void reset(){
+    void reset()
+    {
         kontroler.reset();
         model.reset();
         wartosc.reset();
         wartoscProcesu = 0.0;
         obliczone = 0.0;
-        wartoscZadana=0.0;
+        wartoscZadana = 0.0;
     }
 
-    void resetPID() {
-        kontroler.reset();
-    }
+    void resetPID() { kontroler.reset(); }
 
-    void setTrybCalkowania(TrybCalkowania mode) {
-        kontroler.setTrybCalkowania(mode);
-    }
+    void setTrybCalkowania(TrybCalkowania mode) { kontroler.setTrybCalkowania(mode); }
 
-    TrybCalkowania getPIDMode() const {
-        return kontroler.getTrybCalkowania();
-    }
+    TrybCalkowania getPIDMode() const { return kontroler.getTrybCalkowania(); }
 
+    int get_rodzajLiczba() const { return wartosc.get_rodzajLiczba(); }
+    double get_max() const { return wartosc.get_max(); }
+    double get_kp() const { return kontroler.get_kp(); }
+    double get_ki() const { return kontroler.get_ki(); }
+    double get_kd() const { return kontroler.get_kd(); }
+    double getCalka() const { return kontroler.getCalka(); }
+    double getBlad() const { return kontroler.getBlad(); }
+    double getWyjscie() const { return kontroler.getWyjscie(); }
+    double getPochodna() const { return kontroler.getPochodna(); }
+    double get_dolnyLimit() const { return kontroler.get_dolnyLimit(); }
+    double get_gornyLimit() const { return kontroler.get_gornyLimit(); }
+    std::string get_lastA() const { return model.get_lastA(); }
+    std::string get_lastB() const { return model.get_lastB(); }
+    int get_okres() const { return wartosc.get_okres(); }
+    double get_wartoscZadana() const { return wartoscZadana; }
 
-    int get_rodzajLiczba() const { return wartosc.get_rodzajLiczba();}
-    double get_max() const{return wartosc.get_max();}
-    double get_kp() const{return kontroler.get_kp();}
-    double get_ki() const{return kontroler.get_ki();}
-    double get_kd() const{return kontroler.get_kd();}
-    double getCalka() const{return kontroler.getCalka();}
-    double getBlad() const{return kontroler.getBlad();}
-    double getWyjscie() const{return kontroler.getWyjscie();}
-    double getPochodna() const{return kontroler.getPochodna();}
-    double get_dolnyLimit() const{return kontroler.get_dolnyLimit();}
-    double get_gornyLimit() const{return kontroler.get_gornyLimit();}
-    std::string get_lastA() const{return model.get_lastA();}
-    std::string get_lastB() const{return model.get_lastB();}
-    int get_okres() const{return wartosc.get_okres();}
-    double get_wartoscZadana() const{return wartoscZadana;}
 private:
     ARXModel model;
     PIDController kontroler;
@@ -509,4 +551,3 @@ private:
     double wartoscZadana = 0.0;
     double obliczone;
 };
-

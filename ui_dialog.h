@@ -48,7 +48,7 @@ public:
         buttonBox->setObjectName("buttonBox");
         buttonBox->setGeometry(QRect(30, 240, 341, 32));
         buttonBox->setOrientation(Qt::Horizontal);
-        buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+        buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
         layoutWidget = new QWidget(Dialog);
         layoutWidget->setObjectName("layoutWidget");
         layoutWidget->setGeometry(QRect(122, 62, 178, 145));
@@ -104,10 +104,15 @@ public:
 
         gridLayout->addWidget(spinbox_delay, 2, 2, 1, 2);
 
-
         retranslateUi(Dialog);
-        QObject::connect(buttonBox, &QDialogButtonBox::accepted, Dialog, qOverload<>(&QDialog::accept));
-        QObject::connect(buttonBox, &QDialogButtonBox::rejected, Dialog, qOverload<>(&QDialog::reject));
+        QObject::connect(buttonBox,
+                         &QDialogButtonBox::accepted,
+                         Dialog,
+                         qOverload<>(&QDialog::accept));
+        QObject::connect(buttonBox,
+                         &QDialogButtonBox::rejected,
+                         Dialog,
+                         qOverload<>(&QDialog::reject));
 
         QMetaObject::connectSlotsByName(Dialog);
     } // setupUi
@@ -119,13 +124,14 @@ public:
         label_3->setText(QCoreApplication::translate("Dialog", "Szum:", nullptr));
         label->setText(QCoreApplication::translate("Dialog", "A:", nullptr));
         label_2->setText(QCoreApplication::translate("Dialog", "B:", nullptr));
-        label_5->setText(QCoreApplication::translate("Dialog", "Op\303\263\305\272nienie:", nullptr));
+        label_5->setText(
+            QCoreApplication::translate("Dialog", "Op\303\263\305\272nienie:", nullptr));
     } // retranslateUi
-
 };
 
 namespace Ui {
-    class Dialog: public Ui_Dialog {};
+class Dialog : public Ui_Dialog
+{};
 } // namespace Ui
 
 QT_END_NAMESPACE

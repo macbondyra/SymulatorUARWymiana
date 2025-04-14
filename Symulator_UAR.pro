@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -10,18 +10,23 @@ CONFIG += c++17
 
 SOURCES += \
     dialog.cpp \
+    dialogonline.cpp \
     main.cpp \
+    nadajnik.cpp \
     qcustomplot.cpp \
     symulator.cpp
 
 HEADERS += \
     dialog.h \
+    dialogonline.h \
     klasy.h \
+    nadajnik.h \
     qcustomplot.h \
     symulator.h
 
 FORMS += \
     dialog.ui \
+    dialogonline.ui \
     symulator.ui
 
 # Default rules for deployment.

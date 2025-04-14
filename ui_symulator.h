@@ -124,7 +124,6 @@ public:
 
         verticalLayout_9->addWidget(wykres_uchyb);
 
-
         horizontalLayout_17->addLayout(verticalLayout_9);
 
         verticalLayout_10 = new QVBoxLayout();
@@ -141,9 +140,7 @@ public:
 
         verticalLayout_10->addWidget(wykres_kontroler_suma);
 
-
         horizontalLayout_17->addLayout(verticalLayout_10);
-
 
         gridLayout->addLayout(horizontalLayout_17, 0, 0, 1, 1);
 
@@ -172,7 +169,6 @@ public:
 
         horizontalLayout_4->addWidget(button_reset);
 
-
         horizontalLayout_16->addLayout(horizontalLayout_4);
 
         horizontalLayout_5 = new QHBoxLayout();
@@ -186,16 +182,15 @@ public:
         font1.setBold(true);
         label_interval->setFont(font1);
         label_interval->setTextFormat(Qt::AutoText);
-        label_interval->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        label_interval->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
 
         verticalLayout_3->addWidget(label_interval);
 
         label_ms = new QLabel(centralwidget);
         label_ms->setObjectName("label_ms");
-        label_ms->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        label_ms->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
 
         verticalLayout_3->addWidget(label_ms);
-
 
         horizontalLayout_5->addLayout(verticalLayout_3);
 
@@ -211,9 +206,7 @@ public:
 
         horizontalLayout_5->addWidget(spinbox_interval);
 
-
         horizontalLayout_16->addLayout(horizontalLayout_5);
-
 
         gridLayout->addLayout(horizontalLayout_16, 1, 0, 1, 1);
 
@@ -257,7 +250,6 @@ public:
 
         verticalLayout_4->addWidget(label_D);
 
-
         horizontalLayout_6->addLayout(verticalLayout_4);
 
         verticalLayout_5 = new QVBoxLayout();
@@ -281,7 +273,6 @@ public:
 
         verticalLayout_5->addWidget(spinbox_D);
 
-
         horizontalLayout_6->addLayout(verticalLayout_5);
 
         button_reset_pid = new QPushButton(groupBox_PID);
@@ -293,7 +284,6 @@ public:
         comboBox_mode->setObjectName("comboBox_mode");
 
         horizontalLayout_6->addWidget(comboBox_mode);
-
 
         horizontalLayout_3->addWidget(groupBox_PID);
 
@@ -311,9 +301,7 @@ public:
 
         verticalLayout_6->addWidget(arxModify);
 
-
         horizontalLayout_10->addLayout(verticalLayout_6);
-
 
         horizontalLayout_3->addWidget(groupBox_ARX);
 
@@ -363,7 +351,6 @@ public:
 
         verticalLayout_8->addWidget(label);
 
-
         horizontalLayout_12->addLayout(verticalLayout_8);
 
         verticalLayout_7 = new QVBoxLayout();
@@ -387,15 +374,11 @@ public:
 
         verticalLayout_7->addWidget(spinBox_wypelnienie);
 
-
         horizontalLayout_12->addLayout(verticalLayout_7);
-
 
         horizontalLayout_13->addLayout(horizontalLayout_12);
 
-
         horizontalLayout_14->addLayout(horizontalLayout_13);
-
 
         horizontalLayout_3->addWidget(groupBox_WartoscZadana);
 
@@ -425,7 +408,6 @@ public:
 
         horizontalLayout->addWidget(spinbox_minimum);
 
-
         verticalLayout->addLayout(horizontalLayout);
 
         horizontalLayout_2 = new QHBoxLayout();
@@ -445,9 +427,7 @@ public:
 
         horizontalLayout_2->addWidget(spinbox_maksimum);
 
-
         verticalLayout->addLayout(horizontalLayout_2);
-
 
         horizontalLayout_11->addLayout(verticalLayout);
 
@@ -456,9 +436,7 @@ public:
 
         horizontalLayout_11->addWidget(checkBox);
 
-
         horizontalLayout_3->addWidget(groupBox_UstawieniaFiltra);
-
 
         horizontalLayout_15->addLayout(horizontalLayout_3);
 
@@ -476,7 +454,6 @@ public:
         button_wczytaj->setFont(font);
 
         verticalLayout_2->addWidget(button_wczytaj);
-
 
         horizontalLayout_15->addLayout(verticalLayout_2);
 
@@ -518,7 +495,8 @@ public:
         button_start->setText(QCoreApplication::translate("Symulator", "Start", nullptr));
         button_stop->setText(QCoreApplication::translate("Symulator", "Stop", nullptr));
         button_reset->setText(QCoreApplication::translate("Symulator", "Reset", nullptr));
-        label_interval->setText(QCoreApplication::translate("Symulator", "Interwa\305\202", nullptr));
+        label_interval->setText(
+            QCoreApplication::translate("Symulator", "Interwa\305\202", nullptr));
         label_ms->setText(QCoreApplication::translate("Symulator", "(w ms)", nullptr));
         groupBox_PID->setTitle(QCoreApplication::translate("Symulator", "PID", nullptr));
         label_P->setText(QCoreApplication::translate("Symulator", "P", nullptr));
@@ -527,22 +505,27 @@ public:
         button_reset_pid->setText(QCoreApplication::translate("Symulator", "Reset", nullptr));
         groupBox_ARX->setTitle(QCoreApplication::translate("Symulator", "ARX", nullptr));
         arxModify->setText(QCoreApplication::translate("Symulator", "Modyfikuj", nullptr));
-        groupBox_WartoscZadana->setTitle(QCoreApplication::translate("Symulator", "Warto\305\233\304\207 Zadana", nullptr));
+        groupBox_WartoscZadana->setTitle(
+            QCoreApplication::translate("Symulator", "Warto\305\233\304\207 Zadana", nullptr));
         label_maksimumY->setText(QCoreApplication::translate("Symulator", "Max Y", nullptr));
         label_okres->setText(QCoreApplication::translate("Symulator", "Okres", nullptr));
-        label->setText(QCoreApplication::translate("Symulator", "Wype\305\202nienie (w %)", nullptr));
-        groupBox_UstawieniaFiltra->setTitle(QCoreApplication::translate("Symulator", "Ustawienia filtra", nullptr));
+        label->setText(
+            QCoreApplication::translate("Symulator", "Wype\305\202nienie (w %)", nullptr));
+        groupBox_UstawieniaFiltra->setTitle(
+            QCoreApplication::translate("Symulator", "Ustawienia filtra", nullptr));
         label_minimum->setText(QCoreApplication::translate("Symulator", "Minimum", nullptr));
         label_maksimum->setText(QCoreApplication::translate("Symulator", "Maksimum", nullptr));
-        checkBox->setText(QCoreApplication::translate("Symulator", "U\305\274y\304\207 filtra?", nullptr));
+        checkBox->setText(
+            QCoreApplication::translate("Symulator", "U\305\274y\304\207 filtra?", nullptr));
         button_zapisz->setText(QCoreApplication::translate("Symulator", "Zapisz do pliku", nullptr));
-        button_wczytaj->setText(QCoreApplication::translate("Symulator", "Wczytaj z pliku", nullptr));
+        button_wczytaj->setText(
+            QCoreApplication::translate("Symulator", "Wczytaj z pliku", nullptr));
     } // retranslateUi
-
 };
 
 namespace Ui {
-    class Symulator: public Ui_Symulator {};
+class Symulator : public Ui_Symulator
+{};
 } // namespace Ui
 
 QT_END_NAMESPACE

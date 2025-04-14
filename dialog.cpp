@@ -1,6 +1,6 @@
 #include "dialog.h"
-#include "ui_dialog.h"
 #include "symulator.h"
+#include "ui_dialog.h"
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
@@ -13,8 +13,6 @@ Dialog::~Dialog()
 {
     delete ui;
 }
-
-
 
 std::vector<double> Dialog::getA()
 {
@@ -35,23 +33,11 @@ double Dialog::getSzum()
     return ui->szumDialog->value();
 }
 
-void Dialog::on_szumDialog_valueChanged(double arg1)
-{
+void Dialog::on_szumDialog_valueChanged(double arg1) {}
 
-}
+void Dialog::on_ADialog_editingFinished() {}
 
-
-void Dialog::on_ADialog_editingFinished()
-{
-
-}
-
-
-void Dialog::on_BDialog_editingFinished()
-{
-
-
-}
+void Dialog::on_BDialog_editingFinished() {}
 
 int Dialog::getDelay()
 {
