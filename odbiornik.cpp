@@ -50,10 +50,10 @@ void Odbiornik::readData()
     QString dataStr = QString::fromUtf8(receivedData);
     qDebug() << "Otrzymano dane: " << dataStr;
 
-    // Wyświetl odebraną wiadomość za pomocą MessageBox
+
     QMessageBox::information(nullptr, "Odebrana wiadomość", "Serwer odebrał: " + dataStr);
 
-    // Przygotuj wiadomość zwrotną do klienta
+
     QString responseMsg = "Wiadomość z serwera: Odebrano Twoją wiadomość!";
     clientSocket->write(responseMsg.toUtf8());
 }
