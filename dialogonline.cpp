@@ -6,6 +6,8 @@ DialogOnline::DialogOnline(QWidget *parent)
     , ui(new Ui::DialogOnline)
 {
     ui->setupUi(this);
+    ui->comboBoxTryb->addItem("PID");
+    ui->comboBoxTryb->addItem("ARX");
 }
 
 DialogOnline::~DialogOnline()
@@ -28,9 +30,9 @@ quint16 DialogOnline::getPort()
     return ui->lineEditPort->text().toUShort();
 }
 
-DialogOnline::trybPracy DialogOnline::getTryb()
+int DialogOnline::getTryb()
 {
     int wybor = ui->comboBoxTryb->currentIndex();
-    return static_cast <trybPracy>(wybor);
+    return wybor;
 }
 

@@ -9,7 +9,7 @@
 #include <random>
 #include <sstream>
 #include <vector>
-#include "Nadajnik.h"
+#include "nadajnik.h"
 
 class ARXModel
 {
@@ -319,7 +319,7 @@ public:
         , maxCalka(10.0)
         , maxPochodna(10.0)
         , integralMode(mode)
-        , nadawacz()
+        , nadawacz(nullptr,this)
     {}
 
     PIDController()
@@ -337,7 +337,7 @@ public:
         , maxCalka(10.0)
         , maxPochodna(10.0)
         , integralMode(TrybCalkowania::POST_SUM)
-        , nadawacz()
+        , nadawacz(nullptr,this)
     {}
 
     double get_kp() const { return kp; }
@@ -354,6 +354,7 @@ public:
     double getBlad() const { return kp * blad; }
     double getPochodna() const { return kd * pochodna; }
     double getWyjscie() const { return wyjscie; }
+    Nadajnik* getNadajnik() {return &nadawacz;}
 
     void ustawLimity(double lower, double upper)
     {
@@ -542,6 +543,7 @@ public:
     std::string get_lastB() const { return model.get_lastB(); }
     int get_okres() const { return wartosc.get_okres(); }
     double get_wartoscZadana() const { return wartoscZadana; }
+    PIDController* getPID() {return &kontroler;}
 
 private:
     ARXModel model;

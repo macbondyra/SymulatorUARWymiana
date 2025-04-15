@@ -409,7 +409,17 @@ void Symulator::on_button_online_clicked()
     dialogOnline = new DialogOnline(nullptr);
     int result = dialogOnline->exec();
     if(result){
+        QString ip = dialogOnline->getIp();
+        quint16 port = dialogOnline->getPort();
+        int tryb = dialogOnline->getTryb();
+        if(tryb==0){
+        uklad.getPID()->getNadajnik()->setPort(port);
+        uklad.getPID()->getNadajnik()->setIP(ip);
+        uklad.getPID()->getNadajnik()->connectToHost();
+        }
+        /*if(tryb==1){
 
+        }*/
     }
 }
 

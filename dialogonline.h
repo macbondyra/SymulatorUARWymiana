@@ -15,14 +15,11 @@ class DialogOnline : public QDialog
 public:
     explicit DialogOnline(QWidget *parent = nullptr);
     ~DialogOnline();
-
-private:
-    Ui::DialogOnline *ui;
     QString getIp();
     quint16 getPort();
-    enum class trybPracy{Regulator,Obiekt};
-    trybPracy getTryb();
-
+    int getTryb();
+private:
+    Ui::DialogOnline *ui;
 
 };
 

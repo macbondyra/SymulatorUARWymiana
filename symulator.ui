@@ -18,58 +18,6 @@
     <property name="sizeConstraint">
      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
     </property>
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_17">
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_9">
-        <item>
-         <widget class="QCustomPlot" name="wykres" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCustomPlot" name="wykres_uchyb" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_10">
-        <item>
-         <widget class="QCustomPlot" name="wykres_kontroler" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCustomPlot" name="wykres_kontroler_suma" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </item>
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_16">
       <property name="sizeConstraint">
@@ -621,6 +569,58 @@
           </property>
           <property name="text">
            <string>Wczytaj z pliku</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_17">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QCustomPlot" name="wykres" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomPlot" name="wykres_uchyb" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <widget class="QCustomPlot" name="wykres_kontroler" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomPlot" name="wykres_kontroler_suma" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
           </property>
          </widget>
         </item>
