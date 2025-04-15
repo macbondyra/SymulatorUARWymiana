@@ -419,12 +419,15 @@ void Symulator::on_button_online_clicked()
             uklad.getPID()->getNadajnik()->setPort(port);
             uklad.getPID()->getNadajnik()->setIP(ip);
             uklad.getPID()->getNadajnik()->connectToHost();
-
+            ui->groupBox_ARX->hide();
         }
         if(tryb==1){
             uklad.getModel()->getOdbiornik()->setIp(ip);
             uklad.getModel()->getOdbiornik()->setPort(port);
             uklad.getModel()->getOdbiornik()->startListening();
+            ui->groupBox_PID->hide();
+            ui->groupBox_UstawieniaFiltra->hide();
+            ui->groupBox_WartoscZadana->hide();
         }
     }
 }
