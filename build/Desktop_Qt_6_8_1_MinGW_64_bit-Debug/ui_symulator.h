@@ -35,13 +35,6 @@ class Ui_Symulator
 public:
     QWidget *centralwidget;
     QGridLayout *gridLayout;
-    QHBoxLayout *horizontalLayout_17;
-    QVBoxLayout *verticalLayout_9;
-    QCustomPlot *wykres;
-    QCustomPlot *wykres_uchyb;
-    QVBoxLayout *verticalLayout_10;
-    QCustomPlot *wykres_kontroler;
-    QCustomPlot *wykres_kontroler_suma;
     QHBoxLayout *horizontalLayout_16;
     QHBoxLayout *horizontalLayout_4;
     QPushButton *button_start;
@@ -94,8 +87,16 @@ public:
     QDoubleSpinBox *spinbox_maksimum;
     QCheckBox *checkBox;
     QVBoxLayout *verticalLayout_2;
+    QPushButton *button_online;
     QPushButton *button_zapisz;
     QPushButton *button_wczytaj;
+    QHBoxLayout *horizontalLayout_17;
+    QVBoxLayout *verticalLayout_9;
+    QCustomPlot *wykres;
+    QCustomPlot *wykres_uchyb;
+    QVBoxLayout *verticalLayout_10;
+    QCustomPlot *wykres_kontroler;
+    QCustomPlot *wykres_kontroler_suma;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -108,48 +109,10 @@ public:
         centralwidget->setObjectName("centralwidget");
         gridLayout = new QGridLayout(centralwidget);
         gridLayout->setObjectName("gridLayout");
-        horizontalLayout_17 = new QHBoxLayout();
-        horizontalLayout_17->setObjectName("horizontalLayout_17");
-        verticalLayout_9 = new QVBoxLayout();
-        verticalLayout_9->setObjectName("verticalLayout_9");
-        wykres = new QCustomPlot(centralwidget);
-        wykres->setObjectName("wykres");
-        wykres->setMinimumSize(QSize(0, 256));
-
-        verticalLayout_9->addWidget(wykres);
-
-        wykres_uchyb = new QCustomPlot(centralwidget);
-        wykres_uchyb->setObjectName("wykres_uchyb");
-        wykres_uchyb->setMinimumSize(QSize(0, 256));
-
-        verticalLayout_9->addWidget(wykres_uchyb);
-
-
-        horizontalLayout_17->addLayout(verticalLayout_9);
-
-        verticalLayout_10 = new QVBoxLayout();
-        verticalLayout_10->setObjectName("verticalLayout_10");
-        wykres_kontroler = new QCustomPlot(centralwidget);
-        wykres_kontroler->setObjectName("wykres_kontroler");
-        wykres_kontroler->setMinimumSize(QSize(0, 256));
-
-        verticalLayout_10->addWidget(wykres_kontroler);
-
-        wykres_kontroler_suma = new QCustomPlot(centralwidget);
-        wykres_kontroler_suma->setObjectName("wykres_kontroler_suma");
-        wykres_kontroler_suma->setMinimumSize(QSize(0, 256));
-
-        verticalLayout_10->addWidget(wykres_kontroler_suma);
-
-
-        horizontalLayout_17->addLayout(verticalLayout_10);
-
-
-        gridLayout->addLayout(horizontalLayout_17, 0, 0, 1, 1);
-
+        gridLayout->setSizeConstraint(QLayout::SizeConstraint::SetDefaultConstraint);
         horizontalLayout_16 = new QHBoxLayout();
         horizontalLayout_16->setObjectName("horizontalLayout_16");
-        horizontalLayout_16->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
+        horizontalLayout_16->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setObjectName("horizontalLayout_4");
         button_start = new QPushButton(centralwidget);
@@ -220,7 +183,7 @@ public:
         horizontalLayout_15 = new QHBoxLayout();
         horizontalLayout_15->setSpacing(4);
         horizontalLayout_15->setObjectName("horizontalLayout_15");
-        horizontalLayout_15->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
+        horizontalLayout_15->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setObjectName("horizontalLayout_3");
         horizontalLayout_3->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
@@ -463,8 +426,22 @@ public:
         horizontalLayout_15->addLayout(horizontalLayout_3);
 
         verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2->setSpacing(6);
         verticalLayout_2->setObjectName("verticalLayout_2");
-        verticalLayout_2->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
+        verticalLayout_2->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
+        verticalLayout_2->setContentsMargins(-1, 0, -1, 6);
+        button_online = new QPushButton(centralwidget);
+        button_online->setObjectName("button_online");
+        QSizePolicy sizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(button_online->sizePolicy().hasHeightForWidth());
+        button_online->setSizePolicy(sizePolicy);
+        button_online->setMinimumSize(QSize(0, 0));
+        button_online->setMaximumSize(QSize(16777215, 16777215));
+
+        verticalLayout_2->addWidget(button_online);
+
         button_zapisz = new QPushButton(centralwidget);
         button_zapisz->setObjectName("button_zapisz");
         button_zapisz->setFont(font);
@@ -480,17 +457,57 @@ public:
 
         horizontalLayout_15->addLayout(verticalLayout_2);
 
-        horizontalLayout_15->setStretch(1, 1);
 
         gridLayout->addLayout(horizontalLayout_15, 2, 0, 1, 1);
+
+        horizontalLayout_17 = new QHBoxLayout();
+        horizontalLayout_17->setObjectName("horizontalLayout_17");
+        verticalLayout_9 = new QVBoxLayout();
+        verticalLayout_9->setObjectName("verticalLayout_9");
+        wykres = new QCustomPlot(centralwidget);
+        wykres->setObjectName("wykres");
+        wykres->setMinimumSize(QSize(0, 256));
+
+        verticalLayout_9->addWidget(wykres);
+
+        wykres_uchyb = new QCustomPlot(centralwidget);
+        wykres_uchyb->setObjectName("wykres_uchyb");
+        wykres_uchyb->setMinimumSize(QSize(0, 256));
+
+        verticalLayout_9->addWidget(wykres_uchyb);
+
+
+        horizontalLayout_17->addLayout(verticalLayout_9);
+
+        verticalLayout_10 = new QVBoxLayout();
+        verticalLayout_10->setObjectName("verticalLayout_10");
+        wykres_kontroler = new QCustomPlot(centralwidget);
+        wykres_kontroler->setObjectName("wykres_kontroler");
+        wykres_kontroler->setMinimumSize(QSize(0, 256));
+
+        verticalLayout_10->addWidget(wykres_kontroler);
+
+        wykres_kontroler_suma = new QCustomPlot(centralwidget);
+        wykres_kontroler_suma->setObjectName("wykres_kontroler_suma");
+        wykres_kontroler_suma->setMinimumSize(QSize(0, 256));
+
+        verticalLayout_10->addWidget(wykres_kontroler_suma);
+
+
+        horizontalLayout_17->addLayout(verticalLayout_10);
+
+
+        gridLayout->addLayout(horizontalLayout_17, 0, 0, 1, 1);
 
         Symulator->setCentralWidget(centralwidget);
         menubar = new QMenuBar(Symulator);
         menubar->setObjectName("menubar");
+        menubar->setEnabled(true);
         menubar->setGeometry(QRect(0, 0, 1203, 21));
         Symulator->setMenuBar(menubar);
         statusbar = new QStatusBar(Symulator);
         statusbar->setObjectName("statusbar");
+        statusbar->setEnabled(true);
         Symulator->setStatusBar(statusbar);
         QWidget::setTabOrder(button_zapisz, button_wczytaj);
         QWidget::setTabOrder(button_wczytaj, spinbox_D);
@@ -535,6 +552,7 @@ public:
         label_minimum->setText(QCoreApplication::translate("Symulator", "Minimum", nullptr));
         label_maksimum->setText(QCoreApplication::translate("Symulator", "Maksimum", nullptr));
         checkBox->setText(QCoreApplication::translate("Symulator", "U\305\274y\304\207 filtra?", nullptr));
+        button_online->setText(QCoreApplication::translate("Symulator", "Tryb Online", nullptr));
         button_zapisz->setText(QCoreApplication::translate("Symulator", "Zapisz do pliku", nullptr));
         button_wczytaj->setText(QCoreApplication::translate("Symulator", "Wczytaj z pliku", nullptr));
     } // retranslateUi

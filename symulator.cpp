@@ -412,14 +412,20 @@ void Symulator::on_button_online_clicked()
         QString ip = dialogOnline->getIp();
         quint16 port = dialogOnline->getPort();
         int tryb = dialogOnline->getTryb();
+        QString trybText = (tryb == 1) ? "ARX" : "PID";
+        QString info = QString("IP: %1 | Port: %2 | Tryb: %3").arg(ip).arg(port).arg(trybText);
+        ui->statusbar->showMessage(info);
         if(tryb==0){
-        uklad.getPID()->getNadajnik()->setPort(port);
-        uklad.getPID()->getNadajnik()->setIP(ip);
-        uklad.getPID()->getNadajnik()->connectToHost();
-        }
-        /*if(tryb==1){
+            uklad.getPID()->getNadajnik()->setPort(port);
+            uklad.getPID()->getNadajnik()->setIP(ip);
+            uklad.getPID()->getNadajnik()->connectToHost();
 
-        }*/
+        }
+        if(tryb==1){
+            uklad.getModel()->getOdbiornik()->setIp(ip);
+            uklad.getModel()->getOdbiornik()->setPort(port);
+            uklad.getModel()->getOdbiornik()->startListening();
+        }
     }
 }
 

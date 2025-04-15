@@ -10,7 +10,7 @@
 #include <sstream>
 #include <vector>
 #include "nadajnik.h"
-
+#include "odbiornik.h"
 class ARXModel
 {
 private:
@@ -22,12 +22,15 @@ private:
     std::unique_ptr<std::normal_distribution<double>> dystrybucja;
     double sigma;
     int opoznienie = 1;
+    Odbiornik odbieracz;
+
 
 public:
     ARXModel(const std::vector<double> &a, const std::vector<double> &b, double szum = 0.0)
         : A(a)
         , B(b)
         , sigma(szum)
+        , odbieracz(nullptr,this)
     {
         if (sigma > 0.0) {
             dystrybucja = std::make_unique<std::normal_distribution<double>>(0.0, sigma);
@@ -41,6 +44,7 @@ public:
 
     ARXModel()
         : sigma(0.0)
+        , odbieracz(nullptr,this)
     {
         A = {0.0};
         B = {0.0};
@@ -49,6 +53,8 @@ public:
         u_hist = std::deque<double>(maxSize, 0.0);
         y_hist = std::deque<double>(maxSize, 0.0);
     }
+
+    Odbiornik* getOdbiornik() {return &odbieracz;}
 
     void setModel(const std::vector<double> &a,
                   const std::vector<double> &b,
@@ -185,6 +191,7 @@ public:
         u_hist = std::deque<double>(maxSize, 0.0);
         y_hist = std::deque<double>(maxSize, 0.0);
     }
+
 };
 
 template<typename T>
@@ -544,6 +551,7 @@ public:
     int get_okres() const { return wartosc.get_okres(); }
     double get_wartoscZadana() const { return wartoscZadana; }
     PIDController* getPID() {return &kontroler;}
+    ARXModel* getModel() {return &model;}
 
 private:
     ARXModel model;

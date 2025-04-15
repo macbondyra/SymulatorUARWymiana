@@ -24,9 +24,14 @@ void Nadajnik::setPort(quint16 portnew)
     port = portnew;
 }
 
-void Nadajnik::sendData()
+void Nadajnik::sendData(const QString &data)
 {
-
+    if (connectionState && socket.state() == QAbstractSocket::ConnectedState) {
+        QByteArray byteData = data.toUtf8();
+        socket.write(byteData);
+    } else {
+        QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
+    }
 }
 
 void Nadajnik::connectToHost()
@@ -42,12 +47,17 @@ void Nadajnik::disconnect()
 
 void Nadajnik::socketReadyRead()
 {
+    QByteArray response = socket.readAll();
+    QString responseStr = QString::fromUtf8(response);
+    qDebug() << "Odpowiedź serwera: " << responseStr;
 
+    QMessageBox::information(nullptr, "Odebrana wiadomość", "Klient odebrał: " + responseStr);
 }
 void Nadajnik::onConnected()
 {
     QMessageBox::information(nullptr,"Status","Połączono pomyślnie z hostem!");
     connectionState = true;
+    sendData("Wiadomość z klienta: Cześć, serwerze!");
 }
 
 void Nadajnik::onConnectionError(QAbstractSocket::SocketError socketError)

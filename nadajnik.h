@@ -20,7 +20,7 @@ private:
     QString ip;
     quint16 port;
     bool connectionState;
-    void sendData();
+    void sendData(const QString &data);
 
     void disconnect();
 signals:
