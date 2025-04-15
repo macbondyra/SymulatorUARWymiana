@@ -1,0 +1,13 @@
+release/dialog.o
+release/dialogonline.o
+release/main.o
+release/nadajnik.o
+release/odbiornik.o
+release/qcustomplot.o
+release/symulator.o
+release/moc_dialog.o
+release/moc_dialogonline.o
+release/moc_nadajnik.o
+release/moc_odbiornik.o
+release/moc_qcustomplot.o
+release/moc_symulator.o

@@ -16,12 +16,12 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <property name="sizeConstraint">
-     <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+     <enum>QLayout::SetDefaultConstraint</enum>
     </property>
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_16">
       <property name="sizeConstraint">
-       <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+       <enum>QLayout::SetMinimumSize</enum>
       </property>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -79,10 +79,10 @@
              <string>Interwał</string>
             </property>
             <property name="textFormat">
-             <enum>Qt::TextFormat::AutoText</enum>
+             <enum>Qt::AutoText</enum>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -92,7 +92,7 @@
              <string>(w ms)</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -121,18 +121,70 @@
       </item>
      </layout>
     </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_17">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QCustomPlot" name="wykres" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomPlot" name="wykres_uchyb" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <widget class="QCustomPlot" name="wykres_kontroler" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomPlot" name="wykres_kontroler_suma" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
     <item row="2" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="0,0">
       <property name="spacing">
        <number>4</number>
       </property>
       <property name="sizeConstraint">
-       <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+       <enum>QLayout::SetMinimumSize</enum>
       </property>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <property name="sizeConstraint">
-         <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+         <enum>QLayout::SetFixedSize</enum>
         </property>
         <item>
          <widget class="QGroupBox" name="groupBox_PID">
@@ -146,13 +198,13 @@
            <string>PID</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
+           <set>Qt::AlignCenter</set>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <property name="sizeConstraint">
-              <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+              <enum>QLayout::SetFixedSize</enum>
              </property>
              <item>
               <widget class="QLabel" name="label_P">
@@ -166,10 +218,10 @@
                 <string>P</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::TextFormat::AutoText</enum>
+                <enum>Qt::AutoText</enum>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -185,10 +237,10 @@
                 <string>I</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::TextFormat::AutoText</enum>
+                <enum>Qt::AutoText</enum>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -204,10 +256,10 @@
                 <string>D</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::TextFormat::AutoText</enum>
+                <enum>Qt::AutoText</enum>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -216,7 +268,7 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <property name="sizeConstraint">
-              <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+              <enum>QLayout::SetFixedSize</enum>
              </property>
              <item>
               <widget class="QDoubleSpinBox" name="spinbox_P">
@@ -266,13 +318,13 @@
            <string>ARX</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
+           <set>Qt::AlignCenter</set>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_10">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <property name="sizeConstraint">
-              <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+              <enum>QLayout::SetFixedSize</enum>
              </property>
              <item>
               <widget class="QPushButton" name="arxModify">
@@ -298,30 +350,30 @@
            <string>Wartość Zadana</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
+           <set>Qt::AlignCenter</set>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_14">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_13">
              <property name="sizeConstraint">
-              <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+              <enum>QLayout::SetFixedSize</enum>
              </property>
              <item>
               <widget class="QListWidget" name="list_WartoscZadana">
                <property name="layoutDirection">
-                <enum>Qt::LayoutDirection::LeftToRight</enum>
+                <enum>Qt::LeftToRight</enum>
                </property>
               </widget>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_12">
                <property name="sizeConstraint">
-                <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+                <enum>QLayout::SetFixedSize</enum>
                </property>
                <item>
                 <layout class="QVBoxLayout" name="verticalLayout_8">
                  <property name="sizeConstraint">
-                  <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+                  <enum>QLayout::SetFixedSize</enum>
                  </property>
                  <item>
                   <widget class="QLabel" name="label_maksimumY">
@@ -335,10 +387,10 @@
                     <string>Max Y</string>
                    </property>
                    <property name="textFormat">
-                    <enum>Qt::TextFormat::AutoText</enum>
+                    <enum>Qt::AutoText</enum>
                    </property>
                    <property name="alignment">
-                    <set>Qt::AlignmentFlag::AlignCenter</set>
+                    <set>Qt::AlignCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -354,10 +406,10 @@
                     <string>Okres</string>
                    </property>
                    <property name="textFormat">
-                    <enum>Qt::TextFormat::AutoText</enum>
+                    <enum>Qt::AutoText</enum>
                    </property>
                    <property name="alignment">
-                    <set>Qt::AlignmentFlag::AlignCenter</set>
+                    <set>Qt::AlignCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -379,7 +431,7 @@
                <item>
                 <layout class="QVBoxLayout" name="verticalLayout_7">
                  <property name="sizeConstraint">
-                  <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+                  <enum>QLayout::SetFixedSize</enum>
                  </property>
                  <item>
                   <widget class="QDoubleSpinBox" name="spinbox_maksimumY"/>
@@ -421,18 +473,18 @@
            <string>Ustawienia filtra</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
+           <set>Qt::AlignCenter</set>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_11">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout">
              <property name="sizeConstraint">
-              <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+              <enum>QLayout::SetFixedSize</enum>
              </property>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout">
                <property name="sizeConstraint">
-                <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+                <enum>QLayout::SetFixedSize</enum>
                </property>
                <item>
                 <widget class="QLabel" name="label_minimum">
@@ -446,10 +498,10 @@
                   <string>Minimum</string>
                  </property>
                  <property name="textFormat">
-                  <enum>Qt::TextFormat::AutoText</enum>
+                  <enum>Qt::AutoText</enum>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignmentFlag::AlignCenter</set>
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
@@ -465,7 +517,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_2">
                <property name="sizeConstraint">
-                <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+                <enum>QLayout::SetFixedSize</enum>
                </property>
                <item>
                 <widget class="QLabel" name="label_maksimum">
@@ -479,10 +531,10 @@
                   <string>Maksimum</string>
                  </property>
                  <property name="textFormat">
-                  <enum>Qt::TextFormat::AutoText</enum>
+                  <enum>Qt::AutoText</enum>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignmentFlag::AlignCenter</set>
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
@@ -515,7 +567,7 @@
          <number>6</number>
         </property>
         <property name="sizeConstraint">
-         <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+         <enum>QLayout::SetMinimumSize</enum>
         </property>
         <property name="topMargin">
          <number>0</number>
@@ -576,57 +628,42 @@
       </item>
      </layout>
     </item>
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_17">
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_9">
-        <item>
-         <widget class="QCustomPlot" name="wykres" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCustomPlot" name="wykres_uchyb" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_10">
-        <item>
-         <widget class="QCustomPlot" name="wykres_kontroler" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCustomPlot" name="wykres_kontroler_suma" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="lineWidth">
+       <number>2</number>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>images2.png</pixmap>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

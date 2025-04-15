@@ -1,0 +1,13 @@
+debug/dialog.o
+debug/dialogonline.o
+debug/main.o
+debug/nadajnik.o
+debug/odbiornik.o
+debug/qcustomplot.o
+debug/symulator.o
+debug/moc_dialog.o
+debug/moc_dialogonline.o
+debug/moc_nadajnik.o
+debug/moc_odbiornik.o
+debug/moc_qcustomplot.o
+debug/moc_symulator.o
