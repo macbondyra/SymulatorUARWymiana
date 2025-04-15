@@ -34,7 +34,7 @@
        <item>
         <widget class="QLineEdit" name="ipPart1">
          <property name="inputMask">
-          <string>000</string>
+          <string/>
          </property>
          <property name="maxLength">
           <number>3</number>
@@ -51,7 +51,7 @@
        <item>
         <widget class="QLineEdit" name="ipPart2">
          <property name="inputMask">
-          <string>000</string>
+          <string/>
          </property>
          <property name="maxLength">
           <number>3</number>
@@ -68,7 +68,7 @@
        <item>
         <widget class="QLineEdit" name="ipPart3">
          <property name="inputMask">
-          <string>000</string>
+          <string/>
          </property>
          <property name="maxLength">
           <number>3</number>
@@ -85,7 +85,7 @@
        <item>
         <widget class="QLineEdit" name="ipPart4">
          <property name="inputMask">
-          <string>000</string>
+          <string/>
          </property>
          <property name="maxLength">
           <number>3</number>
