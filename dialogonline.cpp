@@ -36,3 +36,20 @@ int DialogOnline::getTryb()
     return wybor;
 }
 
+
+void DialogOnline::on_comboBoxTryb_currentIndexChanged(int index)
+{
+    if(index==1){
+        ui->ipPart1->hide();
+        ui->ipPart2->hide();
+        ui->ipPart3->hide();
+        ui->ipPart4->hide();
+    }
+    if(index==0){
+        ui->ipPart1->setVisible(true);
+        ui->ipPart2->setVisible(true);
+        ui->ipPart3->setVisible(true);
+        ui->ipPart4->setVisible(true);
+    }
+}
+

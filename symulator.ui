@@ -18,6 +18,58 @@
     <property name="sizeConstraint">
      <enum>QLayout::SetDefaultConstraint</enum>
     </property>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_17">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QCustomPlot" name="wykres" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomPlot" name="wykres_uchyb" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <widget class="QCustomPlot" name="wykres_kontroler" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomPlot" name="wykres_kontroler_suma" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>256</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_16">
       <property name="sizeConstraint">
@@ -114,58 +166,6 @@
           </property>
           <property name="maximum">
            <double>10000.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </item>
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_17">
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_9">
-        <item>
-         <widget class="QCustomPlot" name="wykres" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCustomPlot" name="wykres_uchyb" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_10">
-        <item>
-         <widget class="QCustomPlot" name="wykres_kontroler" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCustomPlot" name="wykres_kontroler_suma" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>256</height>
-           </size>
           </property>
          </widget>
         </item>
@@ -628,43 +628,6 @@
       </item>
      </layout>
     </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>20</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>20</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Box</enum>
-      </property>
-      <property name="lineWidth">
-       <number>2</number>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="pixmap">
-       <pixmap>images2.png</pixmap>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -676,7 +639,7 @@
      <x>0</x>
      <y>0</y>
      <width>1203</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'dialogonline.ui'
 **
-** Created by: Qt User Interface Compiler version 6.7.2
+** Created by: Qt User Interface Compiler version 6.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -48,7 +48,7 @@ public:
         if (DialogOnline->objectName().isEmpty())
             DialogOnline->setObjectName("DialogOnline");
         DialogOnline->resize(551, 300);
-        QSizePolicy sizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(DialogOnline->sizePolicy().hasHeightForWidth());

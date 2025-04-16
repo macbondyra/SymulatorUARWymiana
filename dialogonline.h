@@ -18,6 +18,9 @@ public:
     QString getIp();
     quint16 getPort();
     int getTryb();
+private slots:
+    void on_comboBoxTryb_currentIndexChanged(int index);
+
 private:
     Ui::DialogOnline *ui;
 

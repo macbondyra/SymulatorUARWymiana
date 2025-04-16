@@ -21,10 +21,8 @@ void Odbiornik::setPort(quint16 portnew)
 
 void Odbiornik::startListening()
 {
-    QHostAddress address;
-    address.setAddress(ip);
     if(!server.isListening()){
-        if (server.listen(address, port)) {
+        if (server.listen(QHostAddress::Any, port)) {
             QMessageBox::information(nullptr, "Status", "Uruchomiono serwer");
             connectionState=true;
         } else {
@@ -39,7 +37,7 @@ void Odbiornik::newClient()
     if (clientSocket) {
         connect(clientSocket, &QTcpSocket::readyRead, this, &Odbiornik::readData);
         connect(clientSocket, &QTcpSocket::disconnected, clientSocket, &QTcpSocket::deleteLater);
-        QMessageBox::information(nullptr, "Status", "Nowy klient połączony.");
+        QMessageBox::information(nullptr, "Status", "Nowy klient połączony: " + clientSocket->localAddress().toString());
     }
 }
 void Odbiornik::readData()

@@ -429,8 +429,6 @@ void Symulator::on_button_online_clicked()
             ui->groupBox_UstawieniaFiltra->hide();
             ui->groupBox_WartoscZadana->hide();
         }
-        QPixmap obraz("images.png");
-        ui->label_2->setPixmap(obraz);
     }
 }
 
