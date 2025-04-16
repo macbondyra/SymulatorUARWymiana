@@ -37,7 +37,7 @@ void Odbiornik::newClient()
     if (clientSocket) {
         connect(clientSocket, &QTcpSocket::readyRead, this, &Odbiornik::readData);
         connect(clientSocket, &QTcpSocket::disconnected, clientSocket, &QTcpSocket::deleteLater);
-        QMessageBox::information(nullptr, "Status", "Nowy klient połączony: " + clientSocket->localAddress().toString());
+        QMessageBox::information(nullptr, "Status", "Nowy klient połączony: " + clientSocket->peerAddress().toString());
     }
 }
 void Odbiornik::readData()
