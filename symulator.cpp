@@ -409,6 +409,7 @@ void Symulator::on_button_online_clicked()
     dialogOnline = new DialogOnline(nullptr);
     int result = dialogOnline->exec();
     if(result){
+        uklad.setIsOnlineModeON(true);
         QString ip = dialogOnline->getIp();
         quint16 port = dialogOnline->getPort();
         int tryb = dialogOnline->getTryb();
@@ -420,6 +421,7 @@ void Symulator::on_button_online_clicked()
             uklad.getPID()->getNadajnik()->setIP(ip);
             uklad.getPID()->getNadajnik()->connectToHost();
             ui->groupBox_ARX->hide();
+            uklad.setTrybPracyInstancji(false);
         }
         if(tryb==1){
             uklad.getModel()->getOdbiornik()->setIp(ip);
@@ -428,6 +430,7 @@ void Symulator::on_button_online_clicked()
             ui->groupBox_PID->hide();
             ui->groupBox_UstawieniaFiltra->hide();
             ui->groupBox_WartoscZadana->hide();
+            uklad.setTrybPracyInstancji(true);
         }
     }
 }

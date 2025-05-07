@@ -12,6 +12,7 @@ public:
     void setIP(QString ipnew);
     void setPort(quint16 portnew);
     void connectToHost();
+    void sendData(const QString &data);
 private:
     PIDController* kontroler;
     QTcpSocket socket;
@@ -20,7 +21,6 @@ private:
     QString ip;
     quint16 port;
     bool connectionState;
-    void sendData(const QString &data);
 
     void disconnect();
 signals:

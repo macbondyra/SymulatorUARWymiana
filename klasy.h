@@ -504,18 +504,35 @@ public:
         kontroler.wczytajText(nazwaPlikuPID);
         wartosc.wczytajText(nazwaPlikuWartosc);
     }
+
     double symulacja(size_t krok)
     {
-        wartoscZadana = wartosc.obliczWartosc(krok);
-        double sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
-        wartoscProcesu = model.krok(sygnalKontrolny);
-        /*
-            std::cerr << "Krok: " << i
-                << " -> Sterowanie: " << sygnalKontrolny
-                << " Wyjscie: " << wartoscProcesu
-                << std::endl;
-                */
-        obliczone = wartoscProcesu;
+        //taktowanie jednostrone
+        if(isOnlineModeON){
+            if(trybPracyInstancji){ // serwer ARX
+                // TODO: wartoscZadana = wartosc.obliczWartosc(krok); w generatorze ma być ten sam nadajnik co w kontrolerze z którego pobierze sie wartoscZadaną
+                // TODO: sygnalKontrolny = kontroler.getNadajnik() pobranie wartosci z PID
+                wartoscProcesu = model.krok(sygnalKontrolny);
+                obliczone = wartoscProcesu;
+
+                // TODO: wysłanie do PID wartości z modelu
+            }
+            else{ // generator i regulator PIDs
+                wartoscZadana = wartosc.obliczWartosc(krok);
+                sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
+                //wartoscProcesu = model.getOdbiornik().sendWyjscieRegulatoraPID
+                obliczone = wartoscProcesu;
+
+                // TODO: wysłanie do ARX wartości z regualtora
+            }
+        }
+        else{ // symulacja lokalna
+            wartoscZadana = wartosc.obliczWartosc(krok);
+            sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
+            wartoscProcesu = model.krok(sygnalKontrolny);
+            obliczone = wartoscProcesu;
+        }
+
         return obliczone;
     }
 
@@ -532,6 +549,8 @@ public:
     void resetPID() { kontroler.reset(); }
 
     void setTrybCalkowania(TrybCalkowania mode) { kontroler.setTrybCalkowania(mode); }
+    void setTrybPracyInstancji(bool tryb){this->trybPracyInstancji = tryb;}
+    void setIsOnlineModeON (bool mode) {this->isOnlineModeON = mode;}
 
     TrybCalkowania getPIDMode() const { return kontroler.getTrybCalkowania(); }
 
@@ -552,6 +571,8 @@ public:
     double get_wartoscZadana() const { return wartoscZadana; }
     PIDController* getPID() {return &kontroler;}
     ARXModel* getModel() {return &model;}
+    bool getTrybPracyInstancji() {return trybPracyInstancji;}
+    bool getIsOnlineModeON() {return isOnlineModeON;}
 
 private:
     ARXModel model;
@@ -559,5 +580,8 @@ private:
     WartZadana wartosc;
     double wartoscProcesu = 0.0;
     double wartoscZadana = 0.0;
+    double sygnalKontrolny = 0.0;
     double obliczone;
+    bool trybPracyInstancji;
+    bool isOnlineModeON;
 };
