@@ -29,7 +29,7 @@ Symulator::Symulator(QWidget *parent)
     , timer(new QTimer(this))
 {
     ui->setupUi(this);
-
+    uklad.getPID()->getNadajnik()->setKrok(&krok);
     connect(ui->button_reset_pid, SIGNAL(clicked()), this, SLOT(on_button_reset_pid_clicked()));
     connect(ui->comboBox_mode,
             SIGNAL(currentIndexChanged(int)),
