@@ -556,10 +556,14 @@ inline void Nadajnik::disconnect()
 inline void Nadajnik::socketReadyRead()
 {
     QByteArray response = socket.readAll();
-    double responseToDouble = response.toDouble();
-    wyjscieARX = responseToDouble;
-    wynik = kontroler->oblicz(wartosc->obliczWartosc(*krok),wyjscieARX,1.0);
-    qDebug()<<"Ja nie jestem odbiornik: "<< wynik<<"\n";
+    double y = response.toDouble();
+    // policz sygnał sterujący
+    double u = kontroler->oblicz(wartosc->obliczWartosc(*krok), y, 1.0);
+    wynik = u;
+    qDebug() << "PID wyliczył u =" << u;
+
+    // od razu wyślij u z powrotem do ARX
+    sendData(u);
 }
 
 inline void Nadajnik::onConnected()
@@ -656,10 +660,14 @@ inline void Odbiornik::readData()
     if (!clientSocket) return;
 
     QByteArray response = clientSocket->readAll();
-    double responseToDouble = response.toDouble();
-    wyjsciePID = responseToDouble;
-    wynik = modelARX->krok(wyjsciePID);
-    qDebug()<<"PO: "<< wynik<<"\n";
+    double u = response.toDouble();
+    // policz wyjście modelu ARX
+    double y = modelARX->krok(u);
+    wynik = y;
+    qDebug() << "ARX wyliczył y =" << y;
+
+    // od razu odeślij y do klienta (PID)
+    sendData(y);
 }
 
 class UkladSterowania
@@ -709,37 +717,14 @@ public:
 
     double symulacja(size_t krok)
     {
-        //taktowanie jednostrone
-        if(isOnlineModeON){
-            if(trybPracyInstancji){ // serwer ARX
-                // TODO: wartoscZadana = wartosc.obliczWartosc(krok); w generatorze ma być ten sam nadajnik co w kontrolerze z którego pobierze sie wartoscZadaną
-                wartoscZadana=wartosc.obliczWartosc(krok);
-                // TODO: sygnalKontrolny = kontroler.getNadajnik() pobranie wartosci z PID
-                qDebug() << "PRZED: "<< wartoscProcesu << "\n";
-                model.getOdbiornik()->sendData(wartoscProcesu);
-                sygnalKontrolny = kontroler.getNadajnik()->getWynik();
-                wartoscProcesu = model.krok(sygnalKontrolny);
-                obliczone = wartoscProcesu;
-
-                // TODO: wysłanie do PID wartości z modelu
-
-
-            }
-            else{ // generator i regulator PIDs
-                wartoscZadana = wartosc.obliczWartosc(krok);
-                sygnalKontrolny = kontroler.oblicz(wartoscZadana, model.getOdbiornik()->getWyjsciePID(), 1.0);
-                kontroler.getNadajnik()->sendData(sygnalKontrolny); // Wyślij do serwera ARX
-                wartoscProcesu = model.getOdbiornik()->getWynik();
-                obliczone=wartoscProcesu;
-                // TODO: wysłanie do ARX wartości z regualtora
-            }
-        }
-        else{ // symulacja lokalna
+        if (!isOnlineModeON) {
+            // lokalnie
             wartoscZadana = wartosc.obliczWartosc(krok);
             sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
             wartoscProcesu = model.krok(sygnalKontrolny);
             obliczone = wartoscProcesu;
         }
+        // w trybie online nic tu nie musisz robić – sloty sieciowe już wymieniają dane
         return obliczone;
     }
 
