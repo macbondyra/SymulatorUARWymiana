@@ -12,8 +12,6 @@ SOURCES += \
     dialog.cpp \
     dialogonline.cpp \
     main.cpp \
-    nadajnik.cpp \
-    odbiornik.cpp \
     qcustomplot.cpp \
     symulator.cpp
 
@@ -21,8 +19,6 @@ HEADERS += \
     dialog.h \
     dialogonline.h \
     klasy.h \
-    nadajnik.h \
-    odbiornik.h \
     qcustomplot.h \
     symulator.h
 
