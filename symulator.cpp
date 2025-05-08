@@ -404,10 +404,8 @@ void Symulator::on_arxModify_clicked()
 
     delete dialog;
 }
-void Symulator::on_button_online_clicked(){
-    return;
-}
-/*void Symulator::on_button_online_clicked()
+
+void Symulator::on_button_online_clicked()
 {
     dialogOnline = new DialogOnline(nullptr);
     int result = dialogOnline->exec();
@@ -420,16 +418,16 @@ void Symulator::on_button_online_clicked(){
         QString info = QString("IP: %1 | Port: %2 | Tryb: %3").arg(ip).arg(port).arg(trybText);
         ui->statusbar->showMessage(info);
         if(tryb==0){
-            uklad.getPID()->getNadajnik()->setPort(port);
-            uklad.getPID()->getNadajnik()->setIP(ip);
-            uklad.getPID()->getNadajnik()->connectToHost();
+            uklad.getNadajnik()->setPort(port);
+            uklad.getNadajnik()->setIP(ip);
+            uklad.getNadajnik()->connectToHost();
             ui->groupBox_ARX->hide();
             uklad.setTrybPracyInstancji(false);
         }
         if(tryb==1){
-            uklad.getModel()->getOdbiornik()->setIp(ip);
-            uklad.getModel()->getOdbiornik()->setPort(port);
-            uklad.getModel()->getOdbiornik()->startListening();
+            uklad.getOdbiornik()->setIp(ip);
+            uklad.getOdbiornik()->setPort(port);
+            uklad.getOdbiornik()->startListening();
             ui->groupBox_PID->hide();
             ui->groupBox_UstawieniaFiltra->hide();
             ui->groupBox_WartoscZadana->hide();
@@ -437,7 +435,7 @@ void Symulator::on_button_online_clicked(){
         }
     }
 }
-*/
+
 
 //void Symulator::on_spinbox_k_valueChanged(double arg1)
 //{

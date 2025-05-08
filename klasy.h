@@ -13,8 +13,6 @@
 #include <QtNetwork>
 #include <QMessageBox>
 
-class Nadajnik;
-class Odbiornik;
 
 class ARXModel
 {
@@ -474,15 +472,50 @@ class Nadajnik : public QObject
 {
     Q_OBJECT
 public:
-    explicit Nadajnik(QObject* parent = nullptr, PIDController* controller = nullptr);
-    void setIP(const QString& ipnew);
-    void setPort(quint16 portnew);
-    void connectToHost();
-    void sendData(double data);
+    Nadajnik(QObject* parent=nullptr, PIDController* controller=nullptr)
+        : QObject(parent)
+        , kontroler(controller)
+        , socket(this)
+        , ip("")
+        , port(0)
+        , connectionState(false)
+        , wynik(0.0)
+    {
+        connect(&socket, &QTcpSocket::readyRead, this, &Nadajnik::socketReadyRead);
+        connect(&socket, &QTcpSocket::connected, this, &Nadajnik::onConnected);
+        connect(&socket, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::errorOccurred),
+                this, &Nadajnik::onConnectionError);
+    }
+    void setIP(const QString& ipnew){ip = ipnew;}
+    void setPort(quint16 portnew){port = portnew;}
+    void connectToHost()
+    {
+        socket.connectToHost(ip, port);
+    }
     double getWynik() const { return wynik; }
     void setKontroler(PIDController* kontrolerNew){kontroler = kontrolerNew;}
     void setGenerator(WartZadana* generatorNew){wartosc=generatorNew;}
     void setKrok(int *krokNew){krok=krokNew;}
+
+    void sendData(double data)
+    {
+        try{
+        if (connectionState && socket.state() == QAbstractSocket::ConnectedState) {
+            QByteArray dataSent;
+            QDataStream stream(&dataSent, QIODevice::WriteOnly);
+            stream << data;
+            socket.write(dataSent);
+        } else {
+            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
+        }
+        }
+        catch (const std::exception& e) {
+            QMessageBox::critical(nullptr, "Błąd", QString("Wystąpił wyjątek: %1").arg(e.what()));
+        }
+
+    }
+
+
 private:
     PIDController* kontroler;
     WartZadana* wartosc;
@@ -496,98 +529,79 @@ private:
     double wyjscieARX;
     int* krok;
 
-    void disconnect();
+    void disconnect()
+    {
+        socket.disconnectFromHost();
+        connectionState = false;
+    }
 
 private slots:
-    void socketReadyRead();
-    void onConnected();
-    void onConnectionError(QAbstractSocket::SocketError socketError);
+    void socketReadyRead()
+    {
+        try{
+        QByteArray response = socket.readAll();
+        double y = response.toDouble();
+        // policz sygnał sterujący
+        double u = kontroler->oblicz(wartosc->obliczWartosc(*krok), y, 1.0);
+        wynik = u;
+        qDebug() << "PID wyliczył u =" << u;
+
+        // od razu wyślij u z powrotem do ARX
+        sendData(u);
+        }
+        catch (const std::exception& e) {
+            QMessageBox::critical(nullptr, "Błąd", QString("Wystąpił wyjątek: %1").arg(e.what()));
+        }
+    }
+    void onConnected()
+    {
+        QMessageBox::information(nullptr, "Status", "Połączono pomyślnie z hostem!");
+        connectionState = true;
+    }
+    void onConnectionError(QAbstractSocket::SocketError socketError)
+    {
+        Q_UNUSED(socketError)
+        QMessageBox::information(nullptr, "Status", "Błąd połączenia: " + socket.errorString());
+        connectionState = false;
+    }
 };
 
 
-inline Nadajnik::Nadajnik(QObject* parent, PIDController* controller)
-    : QObject(parent)
-    , kontroler(controller)
-    , socket(this)
-    , ip("")
-    , port(0)
-    , connectionState(false)
-    , wynik(0.0)
-{
-    connect(&socket, &QTcpSocket::readyRead, this, &Nadajnik::socketReadyRead);
-    connect(&socket, &QTcpSocket::connected, this, &Nadajnik::onConnected);
-    connect(&socket, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::errorOccurred),
-            this, &Nadajnik::onConnectionError);
-}
-
-inline void Nadajnik::setIP(const QString& ipnew)
-{
-    ip = ipnew;
-}
-
-inline void Nadajnik::setPort(quint16 portnew)
-{
-    port = portnew;
-}
-
-inline void Nadajnik::sendData(double data)
-{
-    if (connectionState && socket.state() == QAbstractSocket::ConnectedState) {
-        QByteArray dataSent;
-        QDataStream stream(&dataSent, QIODevice::WriteOnly);
-        stream << data;
-        socket.write(dataSent);
-    } else {
-        QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
-    }
-}
-
-inline void Nadajnik::connectToHost()
-{
-    socket.connectToHost(ip, port);
-}
-
-inline void Nadajnik::disconnect()
-{
-    socket.disconnectFromHost();
-    connectionState = false;
-}
-
-inline void Nadajnik::socketReadyRead()
-{
-    QByteArray response = socket.readAll();
-    double y = response.toDouble();
-    // policz sygnał sterujący
-    double u = kontroler->oblicz(wartosc->obliczWartosc(*krok), y, 1.0);
-    wynik = u;
-    qDebug() << "PID wyliczył u =" << u;
-
-    // od razu wyślij u z powrotem do ARX
-    sendData(u);
-}
-
-inline void Nadajnik::onConnected()
-{
-    QMessageBox::information(nullptr, "Status", "Połączono pomyślnie z hostem!");
-    connectionState = true;
-}
-
-inline void Nadajnik::onConnectionError(QAbstractSocket::SocketError socketError)
-{
-    Q_UNUSED(socketError)
-    QMessageBox::information(nullptr, "Status", "Błąd połączenia: " + socket.errorString());
-    connectionState = false;
-}
 class Odbiornik : public QObject
 {
     Q_OBJECT
 public:
-    explicit Odbiornik(QObject* parent = nullptr, ARXModel* model = nullptr);
-    void setIp(const QString& ipnew);
-    void setPort(quint16 portnew);
-    void startListening();
-    void setModel(ARXModel* modelNew){modelARX=modelNew;};
-    void sendData(double data);
+    Odbiornik(QObject* parent, ARXModel* model)
+        : QObject(parent)
+        , server(this)
+        , ip("")
+        , port(0)
+        , connectionState(false)
+        , modelARX(model)
+        , clientSocket(nullptr)
+    {
+        connect(&server, &QTcpServer::newConnection, this, &Odbiornik::newClient);
+    }
+    void setIp(const QString& ipnew){ip = ipnew;}
+    void setPort(quint16 portnew){port = portnew;}
+    void startListening()
+    {
+        if (!server.isListening()) {
+            if (server.listen(QHostAddress::Any, port)) {
+                QMessageBox::information(nullptr, "Status", "Uruchomiono serwer");
+                connectionState = true;
+            } else {
+                QMessageBox::critical(nullptr, "Błąd", "Nie udało się uruchomić serwera:\n" + server.errorString());
+            }
+        }
+    }
+    void setModel(ARXModel* modelNew){modelARX=modelNew;}
+    void sendData(double data){
+        QByteArray dataSent;
+        QDataStream stream(&dataSent,QIODevice::WriteOnly);
+        stream<<data;
+        clientSocket->write(dataSent);
+    }
     double getWyjsciePID(){return wyjsciePID;}
     double getWynik(){return wynik;}
 private:
@@ -598,82 +612,43 @@ private:
     ARXModel* modelARX;
     QTcpSocket* clientSocket;
     double wyjsciePID;
-    double wynik;
+    double wynik=0;
 
 private slots:
-    void newClient();
-    void readData();
-};
-
-inline Odbiornik::Odbiornik(QObject* parent, ARXModel* model)
-    : QObject(parent)
-    , server(this)
-    , ip("")
-    , port(0)
-    , connectionState(false)
-    , modelARX(model)
-    , clientSocket(nullptr)
-{
-    connect(&server, &QTcpServer::newConnection, this, &Odbiornik::newClient);
-}
-
-inline void Odbiornik::setIp(const QString& ipnew)
-{
-    ip = ipnew;
-}
-
-inline void Odbiornik::setPort(quint16 portnew)
-{
-    port = portnew;
-}
-
-inline void Odbiornik::startListening()
-{
-    if (!server.isListening()) {
-        if (server.listen(QHostAddress::Any, port)) {
-            QMessageBox::information(nullptr, "Status", "Uruchomiono serwer");
-            connectionState = true;
-        } else {
-            QMessageBox::critical(nullptr, "Błąd", "Nie udało się uruchomić serwera:\n" + server.errorString());
+    void newClient()
+    {
+        clientSocket = server.nextPendingConnection();
+        if (clientSocket) {
+            connect(clientSocket, &QTcpSocket::readyRead, this, &Odbiornik::readData);
+            connect(clientSocket, &QTcpSocket::disconnected, clientSocket, &QTcpSocket::deleteLater);
+            QMessageBox::information(nullptr, "Status", "Nowy klient połączony: " + clientSocket->peerAddress().toString());
         }
     }
-}
+    void readData()
+    {
+        if (!clientSocket) return;
 
-inline void Odbiornik::newClient()
-{
-    clientSocket = server.nextPendingConnection();
-    if (clientSocket) {
-        connect(clientSocket, &QTcpSocket::readyRead, this, &Odbiornik::readData);
-        connect(clientSocket, &QTcpSocket::disconnected, clientSocket, &QTcpSocket::deleteLater);
-        QMessageBox::information(nullptr, "Status", "Nowy klient połączony: " + clientSocket->peerAddress().toString());
+        QByteArray response = clientSocket->readAll();
+        double u = response.toDouble();
+        // policz wyjście modelu ARX
+        double y = modelARX->krok(u);
+        wynik = y;
+        qDebug() << "ARX wyliczył y =" << y;
+
+        // od razu odeślij y do klienta (PID)
+        sendData(y);
     }
-}
-inline void Odbiornik::sendData(double data){
-    QByteArray dataSent;
-    QDataStream stream(&dataSent,QIODevice::WriteOnly);
-    stream<<data;
-    clientSocket->write(dataSent);
-}
+};
 
-inline void Odbiornik::readData()
-{
-    if (!clientSocket) return;
-
-    QByteArray response = clientSocket->readAll();
-    double u = response.toDouble();
-    // policz wyjście modelu ARX
-    double y = modelARX->krok(u);
-    wynik = y;
-    qDebug() << "ARX wyliczył y =" << y;
-
-    // od razu odeślij y do klienta (PID)
-    sendData(y);
-}
 
 class UkladSterowania
 {
 public:
-    UkladSterowania() {};
+    UkladSterowania()
+    :nadajnik(nullptr,&kontroler),
+    odbiornik(nullptr,&model)
+    {
+    };
     ~UkladSterowania() {};
     void setPID(double kp, double ki, double kd, double dolnyLimit = -1.0, double gornyLimit = 1.0)
     {
@@ -712,17 +687,25 @@ public:
     }
     double symulacja(size_t krok)
     {
-        wartoscZadana = wartosc.obliczWartosc(krok);
-        double sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
-        wartoscProcesu = model.krok(sygnalKontrolny);
-        /*
-            std::cerr << "Krok: " << i
-                << " -> Sterowanie: " << sygnalKontrolny
-                << " Wyjscie: " << wartoscProcesu
-                << std::endl;
-                */
-        obliczone = wartoscProcesu;
-        return obliczone;
+        static bool czyPierwsza = true;
+        if (!isOnlineModeON) {
+            // lokalnie
+            wartoscZadana = wartosc.obliczWartosc(krok);
+            sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
+            wartoscProcesu = model.krok(sygnalKontrolny);
+            obliczone = wartoscProcesu;
+            return obliczone;
+        }
+        // w trybie online nic tu nie musisz robić – sloty sieciowe już wymieniają dane
+        else{
+            if(czyPierwsza){
+                odbiornik.sendData(1);
+                czyPierwsza=false;
+            }
+            obliczone = odbiornik.getWynik();
+            qDebug()<<obliczone;
+            return obliczone;
+        }
     }
 
     void reset()
@@ -736,7 +719,8 @@ public:
     }
 
     void resetPID() { kontroler.reset(); }
-
+    void setTrybPracyInstancji(bool tryb){this->trybPracyInstancji = tryb;}
+    void setIsOnlineModeON (bool mode) {this->isOnlineModeON = mode;}
     void setTrybCalkowania(TrybCalkowania mode) { kontroler.setTrybCalkowania(mode); }
 
     TrybCalkowania getPIDMode() const { return kontroler.getTrybCalkowania(); }
@@ -756,13 +740,23 @@ public:
     std::string get_lastB() const { return model.get_lastB(); }
     int get_okres() const { return wartosc.get_okres(); }
     double get_wartoscZadana() const { return wartoscZadana; }
-
+    bool getTrybPracyInstancji() {return trybPracyInstancji;}
+    bool getIsOnlineModeON() {return isOnlineModeON;}
+    PIDController* getPID() {return &kontroler;}
+    ARXModel* getModel() {return &model;}
+    Nadajnik* getNadajnik(){return &nadajnik;}
+    Odbiornik* getOdbiornik() {return &odbiornik;}
 private:
     ARXModel model;
     PIDController kontroler;
     WartZadana wartosc;
+    Nadajnik nadajnik;
+    Odbiornik odbiornik;
     double wartoscProcesu = 0.0;
     double wartoscZadana = 0.0;
+    double sygnalKontrolny = 0.0;
     double obliczone;
+    bool trybPracyInstancji;
+    bool isOnlineModeON=false;
 };
 
