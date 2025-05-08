@@ -29,7 +29,7 @@ Symulator::Symulator(QWidget *parent)
     , timer(new QTimer(this))
 {
     ui->setupUi(this);
-    uklad.getPID()->getNadajnik()->setKrok(&krok);
+
     connect(ui->button_reset_pid, SIGNAL(clicked()), this, SLOT(on_button_reset_pid_clicked()));
     connect(ui->comboBox_mode,
             SIGNAL(currentIndexChanged(int)),
@@ -404,7 +404,10 @@ void Symulator::on_arxModify_clicked()
 
     delete dialog;
 }
-void Symulator::on_button_online_clicked()
+void Symulator::on_button_online_clicked(){
+    return;
+}
+/*void Symulator::on_button_online_clicked()
 {
     dialogOnline = new DialogOnline(nullptr);
     int result = dialogOnline->exec();
@@ -434,7 +437,7 @@ void Symulator::on_button_online_clicked()
         }
     }
 }
-
+*/
 
 //void Symulator::on_spinbox_k_valueChanged(double arg1)
 //{

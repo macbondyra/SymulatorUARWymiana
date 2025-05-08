@@ -27,7 +27,7 @@ private:
     std::unique_ptr<std::normal_distribution<double>> dystrybucja;
     double sigma;
     int opoznienie = 1;
-    std::unique_ptr<Odbiornik> odbieracz;
+
 
 
 public:
@@ -35,7 +35,7 @@ public:
         : A(a)
         , B(b)
         , sigma(szum)
-        , odbieracz(std::make_unique<Odbiornik>(nullptr, this))
+
     {
         if (sigma > 0.0) {
             dystrybucja = std::make_unique<std::normal_distribution<double>>(0.0, sigma);
@@ -49,7 +49,7 @@ public:
 
     ARXModel()
         : sigma(0.0)
-        , odbieracz(std::make_unique<Odbiornik>(nullptr, this))
+
     {
         A = {0.0};
         B = {0.0};
@@ -59,7 +59,7 @@ public:
         y_hist = std::deque<double>(maxSize, 0.0);
     }
 
-    Odbiornik* getOdbiornik() {return odbieracz.get();}
+
 
     void setModel(const std::vector<double> &a,
                   const std::vector<double> &b,
@@ -310,7 +310,7 @@ private:
     double maxCalka;
     double maxPochodna;
     TrybCalkowania integralMode;
-    std::unique_ptr<Nadajnik> nadawacz;
+
 public:
     PIDController(double kp,
                   double ki,
@@ -332,7 +332,7 @@ public:
         , maxCalka(10.0)
         , maxPochodna(10.0)
         , integralMode(mode)
-        , nadawacz(std::make_unique<Nadajnik>(nullptr, this))
+
     {}
 
     PIDController()
@@ -350,7 +350,7 @@ public:
         , maxCalka(10.0)
         , maxPochodna(10.0)
         , integralMode(TrybCalkowania::POST_SUM)
-        , nadawacz(std::make_unique<Nadajnik>(nullptr, this))
+
     {}
 
     double get_kp() const { return kp; }
@@ -367,7 +367,7 @@ public:
     double getBlad() const { return kp * blad; }
     double getPochodna() const { return kd * pochodna; }
     double getWyjscie() const { return wyjscie; }
-    Nadajnik* getNadajnik() {return nadawacz.get();}
+
 
     void ustawLimity(double lower, double upper)
     {
@@ -673,11 +673,7 @@ inline void Odbiornik::readData()
 class UkladSterowania
 {
 public:
-    UkladSterowania() {
-        this->kontroler.getNadajnik()->setKontroler(&kontroler);
-        this->model.getOdbiornik()->setModel(&model);
-        this->kontroler.getNadajnik()->setGenerator(&wartosc);
-    };
+    UkladSterowania() {};
     ~UkladSterowania() {};
     void setPID(double kp, double ki, double kd, double dolnyLimit = -1.0, double gornyLimit = 1.0)
     {
@@ -714,17 +710,18 @@ public:
         kontroler.wczytajText(nazwaPlikuPID);
         wartosc.wczytajText(nazwaPlikuWartosc);
     }
-
     double symulacja(size_t krok)
     {
-        if (!isOnlineModeON) {
-            // lokalnie
-            wartoscZadana = wartosc.obliczWartosc(krok);
-            sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
-            wartoscProcesu = model.krok(sygnalKontrolny);
-            obliczone = wartoscProcesu;
-        }
-        // w trybie online nic tu nie musisz robić – sloty sieciowe już wymieniają dane
+        wartoscZadana = wartosc.obliczWartosc(krok);
+        double sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
+        wartoscProcesu = model.krok(sygnalKontrolny);
+        /*
+            std::cerr << "Krok: " << i
+                << " -> Sterowanie: " << sygnalKontrolny
+                << " Wyjscie: " << wartoscProcesu
+                << std::endl;
+                */
+        obliczone = wartoscProcesu;
         return obliczone;
     }
 
@@ -741,8 +738,6 @@ public:
     void resetPID() { kontroler.reset(); }
 
     void setTrybCalkowania(TrybCalkowania mode) { kontroler.setTrybCalkowania(mode); }
-    void setTrybPracyInstancji(bool tryb){this->trybPracyInstancji = tryb;}
-    void setIsOnlineModeON (bool mode) {this->isOnlineModeON = mode;}
 
     TrybCalkowania getPIDMode() const { return kontroler.getTrybCalkowania(); }
 
@@ -761,10 +756,6 @@ public:
     std::string get_lastB() const { return model.get_lastB(); }
     int get_okres() const { return wartosc.get_okres(); }
     double get_wartoscZadana() const { return wartoscZadana; }
-    PIDController* getPID() {return &kontroler;}
-    ARXModel* getModel() {return &model;}
-    bool getTrybPracyInstancji() {return trybPracyInstancji;}
-    bool getIsOnlineModeON() {return isOnlineModeON;}
 
 private:
     ARXModel model;
@@ -772,8 +763,6 @@ private:
     WartZadana wartosc;
     double wartoscProcesu = 0.0;
     double wartoscZadana = 0.0;
-    double sygnalKontrolny = 0.0;
     double obliczone;
-    bool trybPracyInstancji;
-    bool isOnlineModeON;
 };
+
