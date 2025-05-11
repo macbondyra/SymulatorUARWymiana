@@ -700,6 +700,9 @@ public:
         kontroler.wczytajText(nazwaPlikuPID);
         wartosc.wczytajText(nazwaPlikuWartosc);
     }
+    void inkrementujKrok(){
+        krok++;
+    }
     double symulacja(size_t krok)
     {
         if (!isOnlineModeON) {
@@ -708,7 +711,7 @@ public:
             sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
             wartoscProcesu = model.krok(sygnalKontrolny);
             obliczone = wartoscProcesu;
-            krok++;
+
             return obliczone;
         }
         // w trybie online nic tu nie musisz robić – sloty sieciowe już wymieniają dane
@@ -716,12 +719,12 @@ public:
             if(trybPracyInstancji==1){
             obliczone = odbiornik.getWynik();
             qDebug()<<obliczone;
-            krok++;
+
             return obliczone;
             }
 
             else{
-                krok++;
+
                 obliczone=nadajnik.getWynik();
                 return obliczone;
             }

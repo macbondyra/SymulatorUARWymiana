@@ -125,7 +125,7 @@ Symulator::~Symulator()
 void Symulator::nextStep()
 {
     obecnaWartosc = uklad.symulacja(uklad.getKrok());
-
+    uklad.inkrementujKrok();
     //uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
                  ui->spinbox_I->value(),
