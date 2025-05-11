@@ -331,7 +331,7 @@ void Symulator::on_button_reset_clicked()
 
 void Symulator::on_button_start_clicked()
 {
-    if(!uklad.getIsOnlineModeON()){
+    //if(!uklad.getIsOnlineModeON()){
     ui->button_reset->setEnabled(true);
     ui->button_start->setEnabled(false);
     ui->button_stop->setEnabled(true);
@@ -347,8 +347,8 @@ void Symulator::on_button_start_clicked()
                      ui->spinbox_maksimumY->value(),
                      ui->spinbox_okres->value(),
                      ui->spinBox_wypelnienie->value());
-    }
-    else{
+    //}
+   /* else{
         if(uklad.getTrybPracyInstancji()){
             uklad.setARX(A,B,szum,delay);
             timer->start();
@@ -366,7 +366,7 @@ void Symulator::on_button_start_clicked()
             timer->start();
 
         }
-    }
+    }*/
 }
 
 void Symulator::on_button_stop_clicked()
