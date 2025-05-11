@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'symulator.ui'
 **
-** Created by: Qt User Interface Compiler version 6.7.2
+** Created by: Qt User Interface Compiler version 6.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -95,6 +95,7 @@ public:
     QCheckBox *checkBox;
     QVBoxLayout *verticalLayout_2;
     QPushButton *button_online;
+    QPushButton *TestyOnline;
     QPushButton *button_zapisz;
     QPushButton *button_wczytaj;
     QMenuBar *menubar;
@@ -109,7 +110,7 @@ public:
         centralwidget->setObjectName("centralwidget");
         gridLayout = new QGridLayout(centralwidget);
         gridLayout->setObjectName("gridLayout");
-        gridLayout->setSizeConstraint(QLayout::SetDefaultConstraint);
+        gridLayout->setSizeConstraint(QLayout::SizeConstraint::SetDefaultConstraint);
         horizontalLayout_17 = new QHBoxLayout();
         horizontalLayout_17->setObjectName("horizontalLayout_17");
         verticalLayout_9 = new QVBoxLayout();
@@ -151,7 +152,7 @@ public:
 
         horizontalLayout_16 = new QHBoxLayout();
         horizontalLayout_16->setObjectName("horizontalLayout_16");
-        horizontalLayout_16->setSizeConstraint(QLayout::SetMinimumSize);
+        horizontalLayout_16->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setObjectName("horizontalLayout_4");
         button_start = new QPushButton(centralwidget);
@@ -187,14 +188,14 @@ public:
         font1.setPointSize(12);
         font1.setBold(true);
         label_interval->setFont(font1);
-        label_interval->setTextFormat(Qt::AutoText);
-        label_interval->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        label_interval->setTextFormat(Qt::TextFormat::AutoText);
+        label_interval->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
 
         verticalLayout_3->addWidget(label_interval);
 
         label_ms = new QLabel(centralwidget);
         label_ms->setObjectName("label_ms");
-        label_ms->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        label_ms->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
 
         verticalLayout_3->addWidget(label_ms);
 
@@ -222,40 +223,40 @@ public:
         horizontalLayout_15 = new QHBoxLayout();
         horizontalLayout_15->setSpacing(4);
         horizontalLayout_15->setObjectName("horizontalLayout_15");
-        horizontalLayout_15->setSizeConstraint(QLayout::SetMinimumSize);
+        horizontalLayout_15->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setObjectName("horizontalLayout_3");
-        horizontalLayout_3->setSizeConstraint(QLayout::SetFixedSize);
+        horizontalLayout_3->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         groupBox_PID = new QGroupBox(centralwidget);
         groupBox_PID->setObjectName("groupBox_PID");
         groupBox_PID->setFont(font1);
-        groupBox_PID->setAlignment(Qt::AlignCenter);
+        groupBox_PID->setAlignment(Qt::AlignmentFlag::AlignCenter);
         horizontalLayout_6 = new QHBoxLayout(groupBox_PID);
         horizontalLayout_6->setObjectName("horizontalLayout_6");
         verticalLayout_4 = new QVBoxLayout();
         verticalLayout_4->setObjectName("verticalLayout_4");
-        verticalLayout_4->setSizeConstraint(QLayout::SetFixedSize);
+        verticalLayout_4->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         label_P = new QLabel(groupBox_PID);
         label_P->setObjectName("label_P");
         label_P->setFont(font1);
-        label_P->setTextFormat(Qt::AutoText);
-        label_P->setAlignment(Qt::AlignCenter);
+        label_P->setTextFormat(Qt::TextFormat::AutoText);
+        label_P->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         verticalLayout_4->addWidget(label_P);
 
         label_I = new QLabel(groupBox_PID);
         label_I->setObjectName("label_I");
         label_I->setFont(font1);
-        label_I->setTextFormat(Qt::AutoText);
-        label_I->setAlignment(Qt::AlignCenter);
+        label_I->setTextFormat(Qt::TextFormat::AutoText);
+        label_I->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         verticalLayout_4->addWidget(label_I);
 
         label_D = new QLabel(groupBox_PID);
         label_D->setObjectName("label_D");
         label_D->setFont(font1);
-        label_D->setTextFormat(Qt::AutoText);
-        label_D->setAlignment(Qt::AlignCenter);
+        label_D->setTextFormat(Qt::TextFormat::AutoText);
+        label_D->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         verticalLayout_4->addWidget(label_D);
 
@@ -264,7 +265,7 @@ public:
 
         verticalLayout_5 = new QVBoxLayout();
         verticalLayout_5->setObjectName("verticalLayout_5");
-        verticalLayout_5->setSizeConstraint(QLayout::SetFixedSize);
+        verticalLayout_5->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         spinbox_P = new QDoubleSpinBox(groupBox_PID);
         spinbox_P->setObjectName("spinbox_P");
         spinbox_P->setMinimum(-99.989999999999995);
@@ -302,12 +303,12 @@ public:
         groupBox_ARX = new QGroupBox(centralwidget);
         groupBox_ARX->setObjectName("groupBox_ARX");
         groupBox_ARX->setFont(font1);
-        groupBox_ARX->setAlignment(Qt::AlignCenter);
+        groupBox_ARX->setAlignment(Qt::AlignmentFlag::AlignCenter);
         horizontalLayout_10 = new QHBoxLayout(groupBox_ARX);
         horizontalLayout_10->setObjectName("horizontalLayout_10");
         verticalLayout_6 = new QVBoxLayout();
         verticalLayout_6->setObjectName("verticalLayout_6");
-        verticalLayout_6->setSizeConstraint(QLayout::SetFixedSize);
+        verticalLayout_6->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         arxModify = new QPushButton(groupBox_ARX);
         arxModify->setObjectName("arxModify");
 
@@ -322,37 +323,37 @@ public:
         groupBox_WartoscZadana = new QGroupBox(centralwidget);
         groupBox_WartoscZadana->setObjectName("groupBox_WartoscZadana");
         groupBox_WartoscZadana->setFont(font1);
-        groupBox_WartoscZadana->setAlignment(Qt::AlignCenter);
+        groupBox_WartoscZadana->setAlignment(Qt::AlignmentFlag::AlignCenter);
         horizontalLayout_14 = new QHBoxLayout(groupBox_WartoscZadana);
         horizontalLayout_14->setObjectName("horizontalLayout_14");
         horizontalLayout_13 = new QHBoxLayout();
         horizontalLayout_13->setObjectName("horizontalLayout_13");
-        horizontalLayout_13->setSizeConstraint(QLayout::SetFixedSize);
+        horizontalLayout_13->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         list_WartoscZadana = new QListWidget(groupBox_WartoscZadana);
         list_WartoscZadana->setObjectName("list_WartoscZadana");
-        list_WartoscZadana->setLayoutDirection(Qt::LeftToRight);
+        list_WartoscZadana->setLayoutDirection(Qt::LayoutDirection::LeftToRight);
 
         horizontalLayout_13->addWidget(list_WartoscZadana);
 
         horizontalLayout_12 = new QHBoxLayout();
         horizontalLayout_12->setObjectName("horizontalLayout_12");
-        horizontalLayout_12->setSizeConstraint(QLayout::SetFixedSize);
+        horizontalLayout_12->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         verticalLayout_8 = new QVBoxLayout();
         verticalLayout_8->setObjectName("verticalLayout_8");
-        verticalLayout_8->setSizeConstraint(QLayout::SetFixedSize);
+        verticalLayout_8->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         label_maksimumY = new QLabel(groupBox_WartoscZadana);
         label_maksimumY->setObjectName("label_maksimumY");
         label_maksimumY->setFont(font1);
-        label_maksimumY->setTextFormat(Qt::AutoText);
-        label_maksimumY->setAlignment(Qt::AlignCenter);
+        label_maksimumY->setTextFormat(Qt::TextFormat::AutoText);
+        label_maksimumY->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         verticalLayout_8->addWidget(label_maksimumY);
 
         label_okres = new QLabel(groupBox_WartoscZadana);
         label_okres->setObjectName("label_okres");
         label_okres->setFont(font1);
-        label_okres->setTextFormat(Qt::AutoText);
-        label_okres->setAlignment(Qt::AlignCenter);
+        label_okres->setTextFormat(Qt::TextFormat::AutoText);
+        label_okres->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         verticalLayout_8->addWidget(label_okres);
 
@@ -370,7 +371,7 @@ public:
 
         verticalLayout_7 = new QVBoxLayout();
         verticalLayout_7->setObjectName("verticalLayout_7");
-        verticalLayout_7->setSizeConstraint(QLayout::SetFixedSize);
+        verticalLayout_7->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         spinbox_maksimumY = new QDoubleSpinBox(groupBox_WartoscZadana);
         spinbox_maksimumY->setObjectName("spinbox_maksimumY");
 
@@ -404,20 +405,20 @@ public:
         groupBox_UstawieniaFiltra = new QGroupBox(centralwidget);
         groupBox_UstawieniaFiltra->setObjectName("groupBox_UstawieniaFiltra");
         groupBox_UstawieniaFiltra->setFont(font1);
-        groupBox_UstawieniaFiltra->setAlignment(Qt::AlignCenter);
+        groupBox_UstawieniaFiltra->setAlignment(Qt::AlignmentFlag::AlignCenter);
         horizontalLayout_11 = new QHBoxLayout(groupBox_UstawieniaFiltra);
         horizontalLayout_11->setObjectName("horizontalLayout_11");
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName("verticalLayout");
-        verticalLayout->setSizeConstraint(QLayout::SetFixedSize);
+        verticalLayout->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName("horizontalLayout");
-        horizontalLayout->setSizeConstraint(QLayout::SetFixedSize);
+        horizontalLayout->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         label_minimum = new QLabel(groupBox_UstawieniaFiltra);
         label_minimum->setObjectName("label_minimum");
         label_minimum->setFont(font1);
-        label_minimum->setTextFormat(Qt::AutoText);
-        label_minimum->setAlignment(Qt::AlignCenter);
+        label_minimum->setTextFormat(Qt::TextFormat::AutoText);
+        label_minimum->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         horizontalLayout->addWidget(label_minimum);
 
@@ -432,12 +433,12 @@ public:
 
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setObjectName("horizontalLayout_2");
-        horizontalLayout_2->setSizeConstraint(QLayout::SetFixedSize);
+        horizontalLayout_2->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
         label_maksimum = new QLabel(groupBox_UstawieniaFiltra);
         label_maksimum->setObjectName("label_maksimum");
         label_maksimum->setFont(font1);
-        label_maksimum->setTextFormat(Qt::AutoText);
-        label_maksimum->setAlignment(Qt::AlignCenter);
+        label_maksimum->setTextFormat(Qt::TextFormat::AutoText);
+        label_maksimum->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         horizontalLayout_2->addWidget(label_maksimum);
 
@@ -467,7 +468,7 @@ public:
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setObjectName("verticalLayout_2");
-        verticalLayout_2->setSizeConstraint(QLayout::SetMinimumSize);
+        verticalLayout_2->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
         verticalLayout_2->setContentsMargins(-1, 0, -1, 6);
         button_online = new QPushButton(centralwidget);
         button_online->setObjectName("button_online");
@@ -480,6 +481,11 @@ public:
         button_online->setMaximumSize(QSize(16777215, 16777215));
 
         verticalLayout_2->addWidget(button_online);
+
+        TestyOnline = new QPushButton(centralwidget);
+        TestyOnline->setObjectName("TestyOnline");
+
+        verticalLayout_2->addWidget(TestyOnline);
 
         button_zapisz = new QPushButton(centralwidget);
         button_zapisz->setObjectName("button_zapisz");
@@ -503,7 +509,7 @@ public:
         menubar = new QMenuBar(Symulator);
         menubar->setObjectName("menubar");
         menubar->setEnabled(true);
-        menubar->setGeometry(QRect(0, 0, 1203, 22));
+        menubar->setGeometry(QRect(0, 0, 1203, 21));
         Symulator->setMenuBar(menubar);
         statusbar = new QStatusBar(Symulator);
         statusbar->setObjectName("statusbar");
@@ -553,6 +559,7 @@ public:
         label_maksimum->setText(QCoreApplication::translate("Symulator", "Maksimum", nullptr));
         checkBox->setText(QCoreApplication::translate("Symulator", "U\305\274y\304\207 filtra?", nullptr));
         button_online->setText(QCoreApplication::translate("Symulator", "Tryb Online", nullptr));
+        TestyOnline->setText(QCoreApplication::translate("Symulator", "TestyOnline", nullptr));
         button_zapisz->setText(QCoreApplication::translate("Symulator", "Zapisz do pliku", nullptr));
         button_wczytaj->setText(QCoreApplication::translate("Symulator", "Wczytaj z pliku", nullptr));
     } // retranslateUi

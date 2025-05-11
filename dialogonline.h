@@ -21,6 +21,7 @@ public:
 private slots:
     void on_comboBoxTryb_currentIndexChanged(int index);
 
+
 private:
     Ui::DialogOnline *ui;
 

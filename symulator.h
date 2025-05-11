@@ -6,6 +6,7 @@
 #include "dialog.h"
 #include "klasy.h"
 #include "dialogonline.h"
+#include "dialogtestonline.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -61,16 +62,19 @@ private slots:
 
     void on_button_online_clicked();
 
+    void on_TestyOnline_clicked();
+
 private:
     Ui::Symulator *ui;
     DialogOnline *dialogOnline;
+    dialogTestOnline *dialogTestowy;
     QTimer *timer = nullptr;
     UkladSterowania uklad;
     std::vector<double> A;
     std::vector<double> B;
     double szum;
     rodzajeWartosci WartoscZadana;
-    int krok = 0;
+
     double obecnaWartosc;
     Dialog *dialog;
     int delay = 1;

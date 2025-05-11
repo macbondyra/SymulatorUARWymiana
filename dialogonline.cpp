@@ -53,3 +53,6 @@ void DialogOnline::on_comboBoxTryb_currentIndexChanged(int index)
     }
 }
 
+
+
+

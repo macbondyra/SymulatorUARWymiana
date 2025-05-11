@@ -472,14 +472,16 @@ class Nadajnik : public QObject
 {
     Q_OBJECT
 public:
-    Nadajnik(QObject* parent=nullptr, PIDController* controller=nullptr)
+    Nadajnik(QObject* parent=nullptr, PIDController* controller=nullptr,int* krokUklad=nullptr,WartZadana* generatorWsk=nullptr)
         : QObject(parent)
         , kontroler(controller)
+        , wartosc(generatorWsk)
         , socket(this)
         , ip("")
         , port(0)
         , connectionState(false)
         , wynik(0.0)
+        , krok(krokUklad)
     {
         connect(&socket, &QTcpSocket::readyRead, this, &Nadajnik::socketReadyRead);
         connect(&socket, &QTcpSocket::connected, this, &Nadajnik::onConnected);
@@ -520,12 +522,13 @@ private:
     PIDController* kontroler;
     WartZadana* wartosc;
     QTcpSocket socket;
+
     QString getIp() const;
     quint16 getPort() const;
     QString ip;
     quint16 port;
     bool connectionState;
-    double wynik;
+    double wynik=0;
     double wyjscieARX;
     int* krok;
 
@@ -534,7 +537,8 @@ private:
         socket.disconnectFromHost();
         connectionState = false;
     }
-
+signals:
+    void startTimer();
 private slots:
     void socketReadyRead()
     {
@@ -543,10 +547,11 @@ private slots:
         double y = response.toDouble();
         // policz sygnał sterujący
         double u = kontroler->oblicz(wartosc->obliczWartosc(*krok), y, 1.0);
-        wynik = u;
+        wynik = y;
         qDebug() << "PID wyliczył u =" << u;
 
         // od razu wyślij u z powrotem do ARX
+        if(socket.isWritable())
         sendData(u);
         }
         catch (const std::exception& e) {
@@ -557,6 +562,10 @@ private slots:
     {
         QMessageBox::information(nullptr, "Status", "Połączono pomyślnie z hostem!");
         connectionState = true;
+        if(socket.isWritable()){
+        double u = kontroler->oblicz(wartosc->obliczWartosc(*krok), 1, 1.0);
+        sendData(u);
+        }
     }
     void onConnectionError(QAbstractSocket::SocketError socketError)
     {
@@ -596,18 +605,23 @@ public:
         }
     }
     void setModel(ARXModel* modelNew){modelARX=modelNew;}
+
     void sendData(double data){
         QByteArray dataSent;
         QDataStream stream(&dataSent,QIODevice::WriteOnly);
         stream<<data;
+        if(clientSocket->isWritable())
         clientSocket->write(dataSent);
     }
     double getWyjsciePID(){return wyjsciePID;}
     double getWynik(){return wynik;}
+signals:
+    void startTimer();
 private:
     QTcpServer server;
     QString ip;
     quint16 port;
+
     bool connectionState;
     ARXModel* modelARX;
     QTcpSocket* clientSocket;
@@ -629,13 +643,14 @@ private slots:
         if (!clientSocket) return;
 
         QByteArray response = clientSocket->readAll();
-        double u = response.toDouble();
-        // policz wyjście modelu ARX
+
+        // W przeciwnym razie traktujemy jako binarne sterowanie PID -> model ARX
+        QDataStream stream(response);
+        double u = 0;
+        stream >> u;
         double y = modelARX->krok(u);
         wynik = y;
         qDebug() << "ARX wyliczył y =" << y;
-
-        // od razu odeślij y do klienta (PID)
         sendData(y);
     }
 };
@@ -645,7 +660,7 @@ class UkladSterowania
 {
 public:
     UkladSterowania()
-    :nadajnik(nullptr,&kontroler),
+    :nadajnik(nullptr,&kontroler,&krok,&wartosc),
     odbiornik(nullptr,&model)
     {
     };
@@ -687,24 +702,29 @@ public:
     }
     double symulacja(size_t krok)
     {
-        static bool czyPierwsza = true;
         if (!isOnlineModeON) {
             // lokalnie
             wartoscZadana = wartosc.obliczWartosc(krok);
             sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
             wartoscProcesu = model.krok(sygnalKontrolny);
             obliczone = wartoscProcesu;
+            krok++;
             return obliczone;
         }
         // w trybie online nic tu nie musisz robić – sloty sieciowe już wymieniają dane
         else{
-            if(czyPierwsza){
-                odbiornik.sendData(1);
-                czyPierwsza=false;
-            }
+            if(trybPracyInstancji==1){
             obliczone = odbiornik.getWynik();
             qDebug()<<obliczone;
+            krok++;
             return obliczone;
+            }
+
+            else{
+                krok++;
+                obliczone=nadajnik.getWynik();
+                return obliczone;
+            }
         }
     }
 
@@ -746,12 +766,15 @@ public:
     ARXModel* getModel() {return &model;}
     Nadajnik* getNadajnik(){return &nadajnik;}
     Odbiornik* getOdbiornik() {return &odbiornik;}
+    int getKrok(){return krok;}
+    void setKrok(int kroknew){krok=kroknew;}
 private:
     ARXModel model;
     PIDController kontroler;
     WartZadana wartosc;
     Nadajnik nadajnik;
     Odbiornik odbiornik;
+    int krok=0;
     double wartoscProcesu = 0.0;
     double wartoscZadana = 0.0;
     double sygnalKontrolny = 0.0;

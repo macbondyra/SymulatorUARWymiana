@@ -124,8 +124,7 @@ Symulator::~Symulator()
 
 void Symulator::nextStep()
 {
-    obecnaWartosc = uklad.symulacja(krok);
-    krok++;
+    obecnaWartosc = uklad.symulacja(uklad.getKrok());
 
     //uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
@@ -139,10 +138,10 @@ void Symulator::nextStep()
                      ui->spinBox_wypelnienie->value());
 
     //rysowanie wykresów dalej
-    ui->wykres->graph(0)->addData(krok, obecnaWartosc);
-    ui->wykres->graph(1)->addData(krok, uklad.get_wartoscZadana());
+    ui->wykres->graph(0)->addData(uklad.getKrok(), obecnaWartosc);
+    ui->wykres->graph(1)->addData(uklad.getKrok(), uklad.get_wartoscZadana());
 
-    if (krok > 100) {
+    if (uklad.getKrok() > 100) {
         rozmiar_wykresu_min.erase(rozmiar_wykresu_min.begin());
         rozmiar_wykresu_kontroler_min.erase(rozmiar_wykresu_kontroler_min.begin());
         rozmiar_wykresu_suma_min.erase(rozmiar_wykresu_suma_min.begin());
@@ -172,13 +171,13 @@ void Symulator::nextStep()
         ->setRange((*std::min_element(rozmiar_wykresu_min.begin(), rozmiar_wykresu_min.end())) - 1,
                    (*std::max_element(rozmiar_wykresu_max.begin(), rozmiar_wykresu_max.end()))
                        * 1.2);
-    if (krok > 100)
-        ui->wykres->xAxis->setRange(krok - 100, krok + 100);
+    if (uklad.getKrok() > 100)
+        ui->wykres->xAxis->setRange(uklad.getKrok() - 100, uklad.getKrok() + 100);
     ui->wykres->replot();
 
-    ui->wykres_kontroler->graph(0)->addData(krok, uklad.getBlad());
-    ui->wykres_kontroler->graph(1)->addData(krok, uklad.getCalka());
-    ui->wykres_kontroler->graph(2)->addData(krok, uklad.getPochodna());
+    ui->wykres_kontroler->graph(0)->addData(uklad.getKrok(), uklad.getBlad());
+    ui->wykres_kontroler->graph(1)->addData(uklad.getKrok(), uklad.getCalka());
+    ui->wykres_kontroler->graph(2)->addData(uklad.getKrok(), uklad.getPochodna());
 
     ui->wykres_kontroler->yAxis->setRange((*std::min_element(rozmiar_wykresu_kontroler_min.begin(),
                                                              rozmiar_wykresu_kontroler_min.end()))
@@ -186,30 +185,30 @@ void Symulator::nextStep()
                                           (*std::max_element(rozmiar_wykresu_kontroler_max.begin(),
                                                              rozmiar_wykresu_kontroler_max.end()))
                                               * 1.2);
-    if (krok > 100)
-        ui->wykres_kontroler->xAxis->setRange(krok - 100, krok + 100);
+    if (uklad.getKrok() > 100)
+        ui->wykres_kontroler->xAxis->setRange(uklad.getKrok() - 100, uklad.getKrok() + 100);
     ui->wykres_kontroler->replot();
 
-    ui->wykres_uchyb->graph(0)->addData(krok, uklad.get_wartoscZadana() - obecnaWartosc);
+    ui->wykres_uchyb->graph(0)->addData(uklad.getKrok(), uklad.get_wartoscZadana() - obecnaWartosc);
     ui->wykres_uchyb->yAxis->setRange(*std::min_element(rozmiar_wykresu_uchyb_min.begin(),
                                                         rozmiar_wykresu_uchyb_min.end())
                                           - 1,
                                       (*std::max_element(rozmiar_wykresu_uchyb_max.begin(),
                                                          rozmiar_wykresu_uchyb_max.end()))
                                           * 1.2);
-    if (krok > 100)
-        ui->wykres_uchyb->xAxis->setRange(krok - 100, krok + 100);
+    if (uklad.getKrok() > 100)
+        ui->wykres_uchyb->xAxis->setRange(uklad.getKrok() - 100, uklad.getKrok() + 100);
     ui->wykres_uchyb->replot();
 
-    ui->wykres_kontroler_suma->graph(0)->addData(krok, uklad.getWyjscie());
+    ui->wykres_kontroler_suma->graph(0)->addData(uklad.getKrok(), uklad.getWyjscie());
     ui->wykres_kontroler_suma->yAxis->setRange(*std::min_element(rozmiar_wykresu_suma_min.begin(),
                                                                  rozmiar_wykresu_suma_min.end())
                                                    - 1,
                                                (*std::max_element(rozmiar_wykresu_suma_max.begin(),
                                                                   rozmiar_wykresu_suma_max.end()))
                                                    * 1.2);
-    if (krok > 100)
-        ui->wykres_kontroler_suma->xAxis->setRange(krok - 100, krok + 100);
+    if (uklad.getKrok() > 100)
+        ui->wykres_kontroler_suma->xAxis->setRange(uklad.getKrok() - 100, uklad.getKrok() + 100);
     ui->wykres_kontroler_suma->replot();
 }
 
@@ -268,7 +267,7 @@ void Symulator::on_button_reset_clicked()
     timer->stop();
 
     uklad.reset();
-    krok = 0;
+    uklad.setKrok(0);
 
     rozmiar_wykresu_min.clear();
     rozmiar_wykresu_kontroler_min.clear();
@@ -332,6 +331,7 @@ void Symulator::on_button_reset_clicked()
 
 void Symulator::on_button_start_clicked()
 {
+    if(!uklad.getIsOnlineModeON()){
     ui->button_reset->setEnabled(true);
     ui->button_start->setEnabled(false);
     ui->button_stop->setEnabled(true);
@@ -347,6 +347,26 @@ void Symulator::on_button_start_clicked()
                      ui->spinbox_maksimumY->value(),
                      ui->spinbox_okres->value(),
                      ui->spinBox_wypelnienie->value());
+    }
+    else{
+        if(uklad.getTrybPracyInstancji()){
+            uklad.setARX(A,B,szum,delay);
+            timer->start();
+        }
+        else{
+            uklad.setPID(ui->spinbox_P->value(),
+                         ui->spinbox_I->value(),
+                         ui->spinbox_D->value(),
+                         ui->spinbox_minimum->value(),
+                         ui->spinbox_maksimum->value());
+            uklad.setWartosc(WartoscZadana,
+                             ui->spinbox_maksimumY->value(),
+                             ui->spinbox_okres->value(),
+                             ui->spinBox_wypelnienie->value());
+            timer->start();
+
+        }
+    }
 }
 
 void Symulator::on_button_stop_clicked()
@@ -442,4 +462,31 @@ void Symulator::on_button_online_clicked()
 
 //}
 
+
+
+void Symulator::on_TestyOnline_clicked()
+{
+    dialogTestowy = new dialogTestOnline(nullptr);
+    int result=dialogTestowy->exec();
+    if(result){
+         uklad.setIsOnlineModeON(true);
+        if(dialogTestowy->getTryb()){
+            uklad.getNadajnik()->setPort(22);
+            uklad.getNadajnik()->setIP("127.0.0.1");
+            uklad.getNadajnik()->connectToHost();
+            ui->groupBox_ARX->hide();
+            uklad.setTrybPracyInstancji(false);
+        }
+        else{
+             uklad.setIsOnlineModeON(true);
+            uklad.getOdbiornik()->setIp("127.0.0.1");
+            uklad.getOdbiornik()->setPort(22);
+            uklad.getOdbiornik()->startListening();
+            ui->groupBox_PID->hide();
+            ui->groupBox_UstawieniaFiltra->hide();
+            ui->groupBox_WartoscZadana->hide();
+            uklad.setTrybPracyInstancji(true);
+        }
+    }
+}
 
