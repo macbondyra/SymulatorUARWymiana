@@ -544,7 +544,10 @@ private slots:
     {
         try{
         QByteArray response = socket.readAll();
-        double y = response.toDouble();
+            QDataStream in(&response, QIODevice::ReadOnly);
+            double y;
+            in >> y;
+
         // policz sygnał sterujący
         double u = kontroler->oblicz(wartosc->obliczWartosc(*krok), y, 1.0);
         wynik = y;
@@ -645,14 +648,16 @@ private slots:
         QByteArray response = clientSocket->readAll();
 
         // W przeciwnym razie traktujemy jako binarne sterowanie PID -> model ARX
-        QDataStream stream(response);
-        double u = 0;
-        stream >> u;
+        QDataStream in(&response, QIODevice::ReadOnly);
+        double u;
+        in >> u;
         double y = modelARX->krok(u);
+        wyjsciePID=u;
         wynik = y;
         qDebug() << "ARX wyliczył y =" << y;
         sendData(y);
     }
+
 };
 
 
