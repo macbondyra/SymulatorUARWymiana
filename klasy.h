@@ -517,7 +517,11 @@ public:
 
     }
 
-
+    void disconnect()
+    {
+        socket.disconnectFromHost();
+        connectionState = false;
+    }
 private:
     PIDController* kontroler;
     WartZadana* wartosc;
@@ -532,11 +536,7 @@ private:
     double wyjscieARX;
     int* krok;
 
-    void disconnect()
-    {
-        socket.disconnectFromHost();
-        connectionState = false;
-    }
+
 signals:
     void startTimer();
 private slots:

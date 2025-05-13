@@ -64,6 +64,8 @@ private slots:
 
     void on_TestyOnline_clicked();
 
+    void on_button_disconnect_clicked();
+
 private:
     Ui::Symulator *ui;
     DialogOnline *dialogOnline;

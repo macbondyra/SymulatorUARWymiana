@@ -427,6 +427,10 @@ void Symulator::on_arxModify_clicked()
 
 void Symulator::on_button_online_clicked()
 {
+    if(uklad.getIsOnlineModeON()){
+        QMessageBox::information(nullptr,"Informacja","Połączenie w toku");
+        return;
+    }
     dialogOnline = new DialogOnline(nullptr);
     int result = dialogOnline->exec();
     if(result){
@@ -466,6 +470,10 @@ void Symulator::on_button_online_clicked()
 
 void Symulator::on_TestyOnline_clicked()
 {
+    if(uklad.getIsOnlineModeON()){
+        QMessageBox::information(nullptr,"Informacja","Połączenie w toku");
+        return;
+    }
     dialogTestowy = new dialogTestOnline(nullptr);
     int result=dialogTestowy->exec();
     if(result){
@@ -486,6 +494,33 @@ void Symulator::on_TestyOnline_clicked()
             ui->groupBox_UstawieniaFiltra->hide();
             ui->groupBox_WartoscZadana->hide();
             uklad.setTrybPracyInstancji(true);
+        }
+    }
+}
+
+
+void Symulator::on_button_disconnect_clicked()
+{
+    if(!uklad.getIsOnlineModeON()){
+        QMessageBox::information(nullptr,"Informacja","Brak połączenia!!!");
+    }
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this,
+                                  "Potwierdzenie",
+                                  "Czy chcesz się rozłączyć ?",
+                                  QMessageBox::Yes | QMessageBox::No);
+    if(reply == QMessageBox::Yes){
+        if(uklad.getTrybPracyInstancji()){
+            uklad.getOdbiornik()->disconnect();
+            ui->groupBox_PID->show();
+            ui->groupBox_UstawieniaFiltra->show();
+            ui->groupBox_WartoscZadana->show();
+            uklad.setIsOnlineModeON(false);
+        }
+        else{
+            uklad.getNadajnik()->disconnect();
+            ui->groupBox_ARX->show();
+            uklad.setIsOnlineModeON(false);
         }
     }
 }
