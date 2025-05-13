@@ -512,6 +512,7 @@ void Symulator::on_button_disconnect_clicked()
     if(reply == QMessageBox::Yes){
         if(uklad.getTrybPracyInstancji()){
             uklad.getOdbiornik()->disconnect();
+            uklad.getOdbiornik()->stopListening();
             ui->groupBox_PID->show();
             ui->groupBox_UstawieniaFiltra->show();
             ui->groupBox_WartoscZadana->show();

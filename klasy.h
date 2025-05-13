@@ -607,6 +607,13 @@ public:
             }
         }
     }
+    void stopListening(){
+        if (server.isListening()) {
+            server.close();
+            QMessageBox::information(nullptr, "Status", "Wyłączono serwer");
+            connectionState = false;
+        }
+    }
     void setModel(ARXModel* modelNew){modelARX=modelNew;}
 
     void sendData(double data){
