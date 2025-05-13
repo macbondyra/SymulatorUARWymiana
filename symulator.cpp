@@ -331,24 +331,23 @@ void Symulator::on_button_reset_clicked()
 
 void Symulator::on_button_start_clicked()
 {
-
     ui->button_reset->setEnabled(true);
     ui->button_start->setEnabled(false);
     ui->button_stop->setEnabled(true);
     timer->start();
-    if(!uklad.getIsOnlineModeON()){
-    uklad.setARX(A, B, szum, delay);
-    uklad.setPID(ui->spinbox_P->value(),
-                 ui->spinbox_I->value(),
-                 ui->spinbox_D->value(),
-                 ui->spinbox_minimum->value(),
-                 ui->spinbox_maksimum->value());
-    uklad.setWartosc(WartoscZadana,
-                     ui->spinbox_maksimumY->value(),
-                     ui->spinbox_okres->value(),
-                     ui->spinBox_wypelnienie->value());
+    if (!uklad.getIsOnlineModeON()) {
+        uklad.setARX(A, B, szum, delay);
+        uklad.setPID(ui->spinbox_P->value(),
+                     ui->spinbox_I->value(),
+                     ui->spinbox_D->value(),
+                     ui->spinbox_minimum->value(),
+                     ui->spinbox_maksimum->value());
+        uklad.setWartosc(WartoscZadana,
+                         ui->spinbox_maksimumY->value(),
+                         ui->spinbox_okres->value(),
+                         ui->spinBox_wypelnienie->value());
     }
-   /* else{
+    /* else{
         if(uklad.getTrybPracyInstancji()){
             uklad.setARX(A,B,szum,delay);
             timer->start();
@@ -427,13 +426,13 @@ void Symulator::on_arxModify_clicked()
 
 void Symulator::on_button_online_clicked()
 {
-    if(uklad.getIsOnlineModeON()){
-        QMessageBox::information(nullptr,"Informacja","Połączenie w toku");
+    if (uklad.getIsOnlineModeON()) {
+        QMessageBox::information(nullptr, "Informacja", "Połączenie w toku");
         return;
     }
     dialogOnline = new DialogOnline(nullptr);
     int result = dialogOnline->exec();
-    if(result){
+    if (result) {
         uklad.setIsOnlineModeON(true);
         QString ip = dialogOnline->getIp();
         quint16 port = dialogOnline->getPort();
@@ -441,14 +440,14 @@ void Symulator::on_button_online_clicked()
         QString trybText = (tryb == 1) ? "ARX" : "PID";
         QString info = QString("IP: %1 | Port: %2 | Tryb: %3").arg(ip).arg(port).arg(trybText);
         ui->statusbar->showMessage(info);
-        if(tryb==0){
+        if (tryb == 0) {
             uklad.getNadajnik()->setPort(port);
             uklad.getNadajnik()->setIP(ip);
             uklad.getNadajnik()->connectToHost();
             ui->groupBox_ARX->hide();
             uklad.setTrybPracyInstancji(false);
         }
-        if(tryb==1){
+        if (tryb == 1) {
             uklad.getOdbiornik()->setIp(ip);
             uklad.getOdbiornik()->setPort(port);
             uklad.getOdbiornik()->startListening();
@@ -460,33 +459,29 @@ void Symulator::on_button_online_clicked()
     }
 }
 
-
 //void Symulator::on_spinbox_k_valueChanged(double arg1)
 //{
 
 //}
 
-
-
 void Symulator::on_TestyOnline_clicked()
 {
-    if(uklad.getIsOnlineModeON()){
-        QMessageBox::information(nullptr,"Informacja","Połączenie w toku");
+    if (uklad.getIsOnlineModeON()) {
+        QMessageBox::information(nullptr, "Informacja", "Połączenie w toku");
         return;
     }
     dialogTestowy = new dialogTestOnline(nullptr);
-    int result=dialogTestowy->exec();
-    if(result){
-         uklad.setIsOnlineModeON(true);
-        if(dialogTestowy->getTryb()){
+    int result = dialogTestowy->exec();
+    if (result) {
+        uklad.setIsOnlineModeON(true);
+        if (dialogTestowy->getTryb()) {
             uklad.getNadajnik()->setPort(22);
             uklad.getNadajnik()->setIP("127.0.0.1");
             uklad.getNadajnik()->connectToHost();
             ui->groupBox_ARX->hide();
             uklad.setTrybPracyInstancji(false);
-        }
-        else{
-             uklad.setIsOnlineModeON(true);
+        } else {
+            uklad.setIsOnlineModeON(true);
             uklad.getOdbiornik()->setIp("127.0.0.1");
             uklad.getOdbiornik()->setPort(22);
             uklad.getOdbiornik()->startListening();
@@ -498,31 +493,29 @@ void Symulator::on_TestyOnline_clicked()
     }
 }
 
-
 void Symulator::on_button_disconnect_clicked()
 {
-    if(!uklad.getIsOnlineModeON()){
-        QMessageBox::information(nullptr,"Informacja","Brak połączenia!!!");
+    if (!uklad.getIsOnlineModeON()) {
+        QMessageBox::information(nullptr, "Informacja", "Brak połączenia!!!");
+        return;
     }
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this,
                                   "Potwierdzenie",
                                   "Czy chcesz się rozłączyć ?",
                                   QMessageBox::Yes | QMessageBox::No);
-    if(reply == QMessageBox::Yes){
-        if(uklad.getTrybPracyInstancji()){
+    if (reply == QMessageBox::Yes) {
+        if (uklad.getTrybPracyInstancji()) {
             uklad.getOdbiornik()->disconnect();
             uklad.getOdbiornik()->stopListening();
             ui->groupBox_PID->show();
             ui->groupBox_UstawieniaFiltra->show();
             ui->groupBox_WartoscZadana->show();
             uklad.setIsOnlineModeON(false);
-        }
-        else{
+        } else {
             uklad.getNadajnik()->disconnect();
             ui->groupBox_ARX->show();
             uklad.setIsOnlineModeON(false);
         }
     }
 }
-

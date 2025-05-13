@@ -3,7 +3,6 @@
 
 #include <QDialog>
 
-
 namespace Ui {
 class DialogOnline;
 }
@@ -21,10 +20,8 @@ public:
 private slots:
     void on_comboBoxTryb_currentIndexChanged(int index);
 
-
 private:
     Ui::DialogOnline *ui;
-
 };
 
 #endif // DIALOGONLINE_H

@@ -4,9 +4,9 @@
 #include <QMainWindow>
 #include <QTimer>
 #include "dialog.h"
-#include "klasy.h"
 #include "dialogonline.h"
 #include "dialogtestonline.h"
+#include "klasy.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

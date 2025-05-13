@@ -15,10 +15,9 @@ dialogTestOnline::~dialogTestOnline()
 
 bool dialogTestOnline::getTryb()
 {
-    if(this->ui->TestServer->isChecked()){
+    if (this->ui->TestServer->isChecked()) {
         return false;
-    }
-    else if(this->ui->TestNadajnik->isChecked()){
+    } else if (this->ui->TestNadajnik->isChecked()) {
         return true;
     }
 }
