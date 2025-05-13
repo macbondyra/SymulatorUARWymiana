@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     dialog.cpp \
     dialogonline.cpp \
+    dialogtestonline.cpp \
     main.cpp \
     qcustomplot.cpp \
     symulator.cpp
@@ -18,6 +19,7 @@ SOURCES += \
 HEADERS += \
     dialog.h \
     dialogonline.h \
+    dialogtestonline.h \
     klasy.h \
     qcustomplot.h \
     symulator.h
@@ -25,6 +27,7 @@ HEADERS += \
 FORMS += \
     dialog.ui \
     dialogonline.ui \
+    dialogtestonline.ui \
     symulator.ui
 
 # Default rules for deployment.

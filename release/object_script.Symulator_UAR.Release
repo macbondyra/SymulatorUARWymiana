@@ -1,10 +1,12 @@
 release/dialog.o
 release/dialogonline.o
+release/dialogtestonline.o
 release/main.o
 release/qcustomplot.o
 release/symulator.o
 release/moc_dialog.o
 release/moc_dialogonline.o
+release/moc_dialogtestonline.o
 release/moc_klasy.o
 release/moc_qcustomplot.o
 release/moc_symulator.o
