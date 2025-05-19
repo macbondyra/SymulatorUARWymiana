@@ -124,7 +124,7 @@ Symulator::~Symulator()
 
 void Symulator::nextStep()
 {
-    obecnaWartosc = uklad.symulacja(uklad.getKrok());
+    obecnaWartosc = uklad.symulacja();
     uklad.inkrementujKrok();
     //uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
@@ -136,6 +136,7 @@ void Symulator::nextStep()
                      ui->spinbox_maksimumY->value(),
                      ui->spinbox_okres->value(),
                      ui->spinBox_wypelnienie->value());
+
 
     //rysowanie wykresów dalej
     ui->wykres->graph(0)->addData(uklad.getKrok(), obecnaWartosc);
@@ -277,7 +278,7 @@ void Symulator::on_button_reset_clicked()
     rozmiar_wykresu_kontroler_max.clear();
     rozmiar_wykresu_suma_max.clear();
     rozmiar_wykresu_uchyb_max.clear();
-
+    if(!uklad.getIsOnlineModeON()){
     uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
                  ui->spinbox_I->value(),
@@ -288,7 +289,21 @@ void Symulator::on_button_reset_clicked()
                      ui->spinbox_maksimumY->value(),
                      ui->spinbox_okres->value(),
                      ui->spinBox_wypelnienie->value());
-
+    }
+    else if(uklad.getTrybPracyInstancji()){
+        uklad.setARX(A,B,szum,delay);
+    }
+    else{
+        uklad.setPID(ui->spinbox_P->value(),
+                     ui->spinbox_I->value(),
+                     ui->spinbox_D->value(),
+                     ui->spinbox_minimum->value(),
+                     ui->spinbox_maksimum->value());
+        uklad.setWartosc(WartoscZadana,
+                         ui->spinbox_maksimumY->value(),
+                         ui->spinbox_okres->value(),
+                         ui->spinBox_wypelnienie->value());
+    }
     ui->wykres->graph(0)->data()->clear();
     ui->wykres->graph(1)->data()->clear();
 
@@ -335,7 +350,7 @@ void Symulator::on_button_start_clicked()
     ui->button_start->setEnabled(false);
     ui->button_stop->setEnabled(true);
     timer->start();
-    if (!uklad.getIsOnlineModeON()) {
+    if (!uklad.getIsOnlineModeON()) {  
         uklad.setARX(A, B, szum, delay);
         uklad.setPID(ui->spinbox_P->value(),
                      ui->spinbox_I->value(),
@@ -347,6 +362,7 @@ void Symulator::on_button_start_clicked()
                          ui->spinbox_okres->value(),
                          ui->spinBox_wypelnienie->value());
     }
+
     /* else{
         if(uklad.getTrybPracyInstancji()){
             uklad.setARX(A,B,szum,delay);
@@ -433,6 +449,7 @@ void Symulator::on_button_online_clicked()
     dialogOnline = new DialogOnline(nullptr);
     int result = dialogOnline->exec();
     if (result) {
+        uklad.reset();
         uklad.setIsOnlineModeON(true);
         QString ip = dialogOnline->getIp();
         quint16 port = dialogOnline->getPort();
@@ -471,6 +488,7 @@ void Symulator::on_TestyOnline_clicked()
         return;
     }
     dialogTestowy = new dialogTestOnline(nullptr);
+    uklad.reset();
     int result = dialogTestowy->exec();
     if (result) {
         uklad.setIsOnlineModeON(true);

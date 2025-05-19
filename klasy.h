@@ -488,6 +488,7 @@ public:
     void setPort(quint16 portnew) { port = portnew; }
     void connectToHost() { socket.connectToHost(ip, port); }
     double getWynik() const { return wynik; }
+    double getWynikPID() const {return wynikPID;}
     void setKontroler(PIDController *kontrolerNew) { kontroler = kontrolerNew; }
     void setGenerator(WartZadana *generatorNew) { wartosc = generatorNew; }
     void setKrok(int *krokNew) { krok = krokNew; }
@@ -527,6 +528,7 @@ private:
     double wynik = 0;
     double wyjscieARX;
     double wartoscZadana=0;
+    double wynikPID=0;
     int *krok;
 
 signals:
@@ -543,6 +545,7 @@ private slots:
             // policz sygnał sterujący
             wartoscZadana = wartosc->obliczWartosc((*krok));
             double u = kontroler->oblicz(wartoscZadana, y, 1.0);
+            wynikPID = u;
             wynik = y;
             qDebug() << "PID wyliczył u =" << u;
 
@@ -713,7 +716,7 @@ public:
         wartosc.wczytajText(nazwaPlikuWartosc);
     }
     void inkrementujKrok() { krok++; }
-    double symulacja(size_t krok)
+    double symulacja()
     {
         if (!isOnlineModeON) {
             // lokalnie
@@ -729,12 +732,17 @@ public:
             if (trybPracyInstancji == 1) {
                 obliczone = odbiornik.getWynik();
                 qDebug() << obliczone;
+
                 wartoscZadana=odbiornik.getWartoscZadana();
+                sygnalKontrolny=odbiornik.getWyjsciePID();
+                wartoscProcesu=odbiornik.getWynik();
                 return obliczone;
             }
 
             else {
                 obliczone = nadajnik.getWynik();
+                wartoscProcesu=obliczone;
+                sygnalKontrolny=nadajnik.getWynikPID();
                 wartoscZadana=nadajnik.getWartoscZadana();
                 return obliczone;
             }
@@ -792,7 +800,7 @@ private:
     double wartoscProcesu = 0.0;
     double wartoscZadana = 0.0;
     double sygnalKontrolny = 0.0;
-    double obliczone;
-    bool trybPracyInstancji;
+    double obliczone=0.0;
+    bool trybPracyInstancji=false;
     bool isOnlineModeON = false;
 };
