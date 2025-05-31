@@ -731,6 +731,7 @@ public:
                 sygnalKontrolny=odbiornik.getWyjsciePID();
                 wartoscZadana=odbiornik.getWartoscZadana();
                 wartoscProcesu=model.krok(sygnalKontrolny);
+                wartoscProcesuLokalna=wartoscProcesu;
                 odbiornik.sendData(wartoscProcesu);
                 obliczone = wartoscProcesu;
                 return obliczone;
@@ -739,11 +740,12 @@ public:
             else {
                 wartoscZadana=wartosc.obliczWartosc(krok);
                 sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
-                wartoscProcesu=model.krok(sygnalKontrolny);
+                wartoscProcesuLokalna=model.krok(sygnalKontrolny);
                 wartoscZadanaLokalna=wartoscZadana;
-                sygnalKontrolny=kontroler.oblicz(wartoscZadana,nadajnik.getWynik(),1.0);
-                wartoscProcesuLokalna=wartoscProcesu;
+                wartoscProcesu=nadajnik.getWynik();
+                sygnalKontrolny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
                 nadajnik.sendData(sygnalKontrolny,wartoscZadana);
+                obliczone=wartoscProcesu;
                 return obliczone;
             }
         }
