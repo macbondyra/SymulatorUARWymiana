@@ -30,6 +30,9 @@ Symulator::Symulator(QWidget *parent)
 {
     ui->setupUi(this);
 
+    WartoscZadana=rodzajeWartosci::skok;
+    ui->list_WartoscZadana->setCurrentRow(0);
+
     connect(ui->button_reset_pid, SIGNAL(clicked()), this, SLOT(on_button_reset_pid_clicked()));
     connect(ui->comboBox_mode,
             SIGNAL(currentIndexChanged(int)),
