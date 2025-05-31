@@ -549,9 +549,6 @@ private slots:
             wynik = y;
             qDebug() << "PID wyliczył u =" << u;
 
-            // od razu wyślij u z powrotem do ARX
-            if (socket.isWritable())
-                sendData(u,wartoscZadana);
         } catch (const std::exception &e) {
             QMessageBox::critical(nullptr, "Błąd", QString("Wystąpił wyjątek: %1").arg(e.what()));
         }
@@ -560,11 +557,6 @@ private slots:
     {
         QMessageBox::information(nullptr, "Status", "Połączono pomyślnie z hostem!");
         connectionState = true;
-        if (socket.isWritable()) {
-            wartoscZadana = wartosc->obliczWartosc((*krok));
-            double u = kontroler->oblicz(wartosc->obliczWartosc(*krok), 1, 1.0);
-            sendData(u,wartoscZadana);
-        }
     }
     void onConnectionError(QAbstractSocket::SocketError socketError)
     {
@@ -657,7 +649,9 @@ private slots:
     {
         if (!clientSocket)
             return;
-
+        if(clientSocket->bytesAvailable()<sizeof(double)+sizeof(double)+sizeof(int)){
+            return;
+        }
         QByteArray response = clientSocket->readAll();
 
         // W przeciwnym razie traktujemy jako binarne sterowanie PID -> model ARX
@@ -669,7 +663,6 @@ private slots:
         wyjsciePID = u;
         wynik = y;
         qDebug() << "ARX wyliczył y =" << y;
-        sendData(y);
     }
 };
 
@@ -730,20 +723,27 @@ public:
         // w trybie online nic tu nie musisz robić – sloty sieciowe już wymieniają dane
         else {
             if (trybPracyInstancji == 1) {
-                obliczone = odbiornik.getWynik();
+
                 qDebug() << obliczone;
 
-                wartoscZadana=odbiornik.getWartoscZadana();
+                wartoscZadanaLokalna=wartosc.obliczWartosc(krok);
+                sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
                 sygnalKontrolny=odbiornik.getWyjsciePID();
-                wartoscProcesu=odbiornik.getWynik();
+                wartoscZadana=odbiornik.getWartoscZadana();
+                wartoscProcesu=model.krok(sygnalKontrolny);
+                odbiornik.sendData(wartoscProcesu);
+                obliczone = wartoscProcesu;
                 return obliczone;
             }
 
             else {
-                obliczone = nadajnik.getWynik();
-                wartoscProcesu=obliczone;
-                sygnalKontrolny=nadajnik.getWynikPID();
-                wartoscZadana=nadajnik.getWartoscZadana();
+                wartoscZadana=wartosc.obliczWartosc(krok);
+                sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
+                wartoscProcesu=model.krok(sygnalKontrolny);
+                wartoscZadanaLokalna=wartoscZadana;
+                sygnalKontrolny=kontroler.oblicz(wartoscZadana,nadajnik.getWynik(),1.0);
+                wartoscProcesuLokalna=wartoscProcesu;
+                nadajnik.sendData(sygnalKontrolny,wartoscZadana);
                 return obliczone;
             }
         }
@@ -800,6 +800,9 @@ private:
     double wartoscProcesu = 0.0;
     double wartoscZadana = 0.0;
     double sygnalKontrolny = 0.0;
+    double wartoscProcesuLokalna = 0.0;
+    double wartoscZadanaLokalna = 0.0;
+    double sygnalKontrolnyLokalny = 0.0;
     double obliczone=0.0;
     bool trybPracyInstancji=false;
     bool isOnlineModeON = false;
