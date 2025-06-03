@@ -493,13 +493,13 @@ public:
     void setGenerator(WartZadana *generatorNew) { wartosc = generatorNew; }
     void setKrok(int *krokNew) { krok = krokNew; }
     double getWartoscZadana(){return wartoscZadana;}
-    void sendData(double data,double wartoscZadana)
+    void sendData(double data,double wartoscZadana,int interval)
     {
         try {
             if (connectionState && socket.state() == QAbstractSocket::ConnectedState) {
                 QByteArray dataSent;
                 QDataStream stream(&dataSent, QIODevice::WriteOnly);
-                stream << data<<wartoscZadana;
+                stream << data<<wartoscZadana<<interval;
                 socket.write(dataSent);
             } else {
                 QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
@@ -605,7 +605,7 @@ public:
         }
     }
     void setModel(ARXModel *modelNew) { modelARX = modelNew; }
-
+    int getOdebranyInterval(){return odebranyInterval;}
     void sendData(double data)
     {
         QByteArray dataSent;
@@ -624,7 +624,7 @@ private:
     QTcpServer server;
     QString ip;
     quint16 port;
-
+    int odebranyInterval=0;
     bool connectionState;
     ARXModel *modelARX;
     QTcpSocket *clientSocket;
@@ -657,7 +657,7 @@ private slots:
         // W przeciwnym razie traktujemy jako binarne sterowanie PID -> model ARX
         QDataStream in(&response, QIODevice::ReadOnly);
         double u,wartoscZadanaOtrzymana;
-        in >> u >>wartoscZadanaOtrzymana;
+        in >> u >>wartoscZadanaOtrzymana>>odebranyInterval;
         wartoscZadana=wartoscZadanaOtrzymana;
         double y = modelARX->krok(u);
         wyjsciePID = u;
@@ -723,9 +723,7 @@ public:
         // w trybie online nic tu nie musisz robić – sloty sieciowe już wymieniają dane
         else {
             if (trybPracyInstancji == 1) {
-
                 qDebug() << obliczone;
-
                 wartoscZadanaLokalna=wartosc.obliczWartosc(krok);
                 sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
                 sygnalKontrolny=odbiornik.getWyjsciePID();
@@ -744,7 +742,7 @@ public:
                 wartoscZadanaLokalna=wartoscZadana;
                 wartoscProcesu=nadajnik.getWynik();
                 sygnalKontrolny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
-                nadajnik.sendData(sygnalKontrolny,wartoscZadana);
+                nadajnik.sendData(sygnalKontrolny,wartoscZadana,interval);
                 obliczone=wartoscProcesu;
                 return obliczone;
             }
@@ -791,6 +789,8 @@ public:
     Odbiornik *getOdbiornik() { return &odbiornik; }
     int getKrok() { return krok; }
     void setKrok(int kroknew) { krok = kroknew; }
+    void setInterval(int intervalnew){interval=intervalnew;}
+    int getInterval(){return interval;}
 
 private:
     ARXModel model;
@@ -799,6 +799,7 @@ private:
     Nadajnik nadajnik;
     Odbiornik odbiornik;
     int krok = 0;
+    int interval;
     double wartoscProcesu = 0.0;
     double wartoscZadana = 0.0;
     double sygnalKontrolny = 0.0;

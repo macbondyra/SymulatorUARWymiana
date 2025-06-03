@@ -127,6 +127,12 @@ Symulator::~Symulator()
 
 void Symulator::nextStep()
 {
+    if(uklad.getTrybPracyInstancji() && uklad.getOdbiornik()->getOdebranyInterval()>0){
+        uklad.setInterval(uklad.getOdbiornik()->getOdebranyInterval());
+        timer->setInterval(uklad.getOdbiornik()->getOdebranyInterval());
+        ui->spinbox_interval->setValue(uklad.getOdbiornik()->getOdebranyInterval());
+    }
+    uklad.setInterval(timer->interval());
     obecnaWartosc = uklad.symulacja();
     uklad.inkrementujKrok();
     //uklad.setARX(A, B, szum, delay);
