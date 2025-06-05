@@ -407,6 +407,12 @@ void Symulator::on_button_stop_clicked()
 
 void Symulator::on_spinbox_interval_valueChanged(double arg1)
 {
+    qDebug() << "[Symulator] spinbox zmienił się na" << arg1
+             << " – tryb online?" << uklad.getIsOnlineModeON()
+             << " – trybInstancji?" << uklad.getTrybPracyInstancji();
+    if (uklad.getIsOnlineModeON() && !uklad.getTrybPracyInstancji()) {
+        uklad.getNadajnik()->sendInterval((int)arg1);
+    }
     timer->setInterval(arg1);
 }
 
@@ -555,4 +561,5 @@ void Symulator::on_button_disconnect_clicked()
 void Symulator::zmienIntervalModel()
 {
     timer->setInterval(uklad.getOdbiornik()->getOdebranyInterval());
+    ui->spinbox_interval->setValue(uklad.getOdbiornik()->getOdebranyInterval());
 }
