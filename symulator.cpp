@@ -41,6 +41,7 @@ Symulator::Symulator(QWidget *parent)
     connect(uklad.getOdbiornik(), &Odbiornik::startTimer, this, &Symulator::on_button_start_clicked);
     connect(uklad.getOdbiornik(), &Odbiornik::stopTimer, this, &Symulator::on_button_stop_clicked);
     connect(uklad.getOdbiornik(), &Odbiornik::odebranoInterval, this, &Symulator::zmienIntervalModel);
+    connect(uklad.getOdbiornik(), &Odbiornik::resetObiekt, this, &Symulator::on_button_reset_clicked);
     // Inicjalne ustawienie wartości
     ui->comboBox_mode->addItem("PRE_SUM");
     ui->comboBox_mode->addItem("POST_SUM");
@@ -268,6 +269,9 @@ void Symulator::on_button_wczytaj_clicked()
 
 void Symulator::on_button_reset_clicked()
 {
+    if (uklad.getIsOnlineModeON() && !uklad.getTrybPracyInstancji()) {
+        uklad.getNadajnik()->sendReset();
+    }
     ui->button_start->setEnabled(true);
     ui->button_stop->setEnabled(false);
     ui->button_reset->setEnabled(false);

@@ -462,7 +462,8 @@ public:
 enum MessageType : qint8 {
     MSG_COMMAND  = 1,  // wysyła tylko bool czyDziala
     MSG_INTERVAL = 2,  // wysyła tylko int interval
-    MSG_CONTROL  = 3   // wysyła: double sygnalKontrolny, double wartoscZadana, int krok
+    MSG_CONTROL  = 3,   // wysyła: double sygnalKontrolny, double wartoscZadana, int krok
+    MSG_RESET = 4
 };
 
 class Nadajnik : public QObject
@@ -525,6 +526,17 @@ public:
         // 1 bajt = typ wiadomości, potem jeden int
         stream << (qint8)MSG_INTERVAL;
         stream << interval;
+        socket.write(out);
+    }
+    void sendReset(){
+        if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
+            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
+            return;
+        }
+        QByteArray out;
+        QDataStream stream(&out, QIODevice::WriteOnly);
+        // 1 bajt = typ wiadomości
+        stream << (qint8)MSG_RESET;
         socket.write(out);
     }
 
@@ -674,7 +686,7 @@ signals:
     void startTimer();
     void stopTimer();
     void odebranoInterval();
-
+    void resetObiekt();
 private:
     QTcpServer server;
     QString ip;
@@ -763,6 +775,10 @@ private slots:
                          << "wartZad =" << wartZad
                          << "krok =" << krokOdebrany
                          << "=> ARX y =" << y;
+                break;
+            }
+            case MSG_RESET:{
+                emit resetObiekt();
                 break;
             }
             default:
