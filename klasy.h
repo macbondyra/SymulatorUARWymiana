@@ -459,6 +459,12 @@ public:
     TrybCalkowania getTrybCalkowania() const { return integralMode; }
 };
 
+enum MessageType : qint8 {
+    MSG_COMMAND  = 1,  // wysyła tylko bool czyDziala
+    MSG_INTERVAL = 2,  // wysyła tylko int interval
+    MSG_CONTROL  = 3   // wysyła: double sygnalKontrolny, double wartoscZadana, int krok
+};
+
 class Nadajnik : public QObject
 {
     Q_OBJECT
@@ -493,21 +499,52 @@ public:
     void setGenerator(WartZadana *generatorNew) { wartosc = generatorNew; }
     void setKrok(int *krokNew) { krok = krokNew; }
     double getWartoscZadana(){return wartoscZadana;}
-    void sendData(double data,double wartoscZadana,int interval)
+    void sendCommand(bool czyDziala)
     {
-        try {
-            if (connectionState && socket.state() == QAbstractSocket::ConnectedState) {
-                QByteArray dataSent;
-                QDataStream stream(&dataSent, QIODevice::WriteOnly);
-                stream << data<<wartoscZadana<<interval;
-                socket.write(dataSent);
-            } else {
-                QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
-            }
-        } catch (const std::exception &e) {
-            QMessageBox::critical(nullptr, "Błąd", QString("Wystąpił wyjątek: %1").arg(e.what()));
+        if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
+            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
+            return;
         }
+        QByteArray out;
+        QDataStream stream(&out, QIODevice::WriteOnly);
+        // 1 bajt = typ wiadomości, potem jedno bool
+        stream << (qint8)MSG_COMMAND;
+        stream << czyDziala;
+        socket.write(out);
     }
+
+    // Wysyła tylko zmianę interwału (int interval)
+    void sendInterval(int interval)
+    {
+        if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
+            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
+            return;
+        }
+        QByteArray out;
+        QDataStream stream(&out, QIODevice::WriteOnly);
+        // 1 bajt = typ wiadomości, potem jeden int
+        stream << (qint8)MSG_INTERVAL;
+        stream << interval;
+        socket.write(out);
+    }
+
+    // Wysyła sygnał sterujący (data = sygnalKontrolny), wartość zadaną i krok
+    void sendControl(double data, double wartoscZadana, int krok)
+    {
+        if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
+            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
+            return;
+        }
+        QByteArray out;
+        QDataStream stream(&out, QIODevice::WriteOnly);
+        // 1 bajt = typ wiadomości, potem double, double, int
+        stream << (qint8)MSG_CONTROL;
+        stream << data;
+        stream << wartoscZadana;
+        stream << krok;
+        socket.write(out);
+    }
+
 
     void disconnect()
     {
@@ -617,8 +654,26 @@ public:
     double getWyjsciePID() { return wyjsciePID; }
     double getWynik() { return wynik; }
     double getWartoscZadana(){return wartoscZadana;}
+    bool getCzyDziala() const {
+        return czyDziala;
+    }
+
+    void setCzyDziala(bool wartosc) {
+        czyDziala = wartosc;
+    }
+
+
+    int getKrok() const {
+        return krok;
+    }
+
+    void setKrok(int wartosc) {
+        krok = wartosc;
+    }
 signals:
     void startTimer();
+    void stopTimer();
+    void odebranoInterval();
 
 private:
     QTcpServer server;
@@ -631,6 +686,11 @@ private:
     double wyjsciePID;
     double wynik = 0;
     double wartoscZadana=0;
+    bool czyDziala=false;
+    int krok=0;
+    QByteArray buffer;              // bufor do gromadzenia nadchodzących bajtów
+
+
 
 private slots:
     void newClient()
@@ -649,20 +709,69 @@ private slots:
     {
         if (!clientSocket)
             return;
-        if(clientSocket->bytesAvailable()<sizeof(double)+sizeof(double)+sizeof(int)){
-            return;
-        }
-        QByteArray response = clientSocket->readAll();
 
-        // W przeciwnym razie traktujemy jako binarne sterowanie PID -> model ARX
-        QDataStream in(&response, QIODevice::ReadOnly);
-        double u,wartoscZadanaOtrzymana;
-        in >> u >>wartoscZadanaOtrzymana>>odebranyInterval;
-        wartoscZadana=wartoscZadanaOtrzymana;
-        double y = modelARX->krok(u);
-        wyjsciePID = u;
-        wynik = y;
-        qDebug() << "ARX wyliczył y =" << y;
+        QByteArray rawData = clientSocket->readAll();
+        if (rawData.isEmpty())
+            return;
+
+        QDataStream in(&rawData, QIODevice::ReadOnly);
+
+        // Może dojść kilka komunikatów naraz, więc odczytujemy w pętli:
+        while (!in.atEnd()) {
+            qint8 msgType;
+            in >> msgType;
+
+            switch (msgType) {
+            case MSG_COMMAND: {
+                // Otrzymujemy tylko bool czyDziala
+                bool dzialaj;
+                in >> dzialaj;
+                czyDziala = dzialaj;
+                if (czyDziala)
+                    emit startTimer();
+                else
+                    emit stopTimer();
+                qDebug() << "[Odbiornik] Odebrano MSG_COMMAND:" << czyDziala;
+                break;
+            }
+            case MSG_INTERVAL: {
+                // Otrzymujemy tylko int interval
+                int nowyInterval;
+                in >> nowyInterval;
+                odebranyInterval = nowyInterval;
+                qDebug() << "[Odbiornik] Odebrano MSG_INTERVAL:" << odebranyInterval;
+                emit odebranoInterval();
+                break;
+            }
+            case MSG_CONTROL: {
+                // Otrzymujemy: double sygnalKontrolny, double wartoscZadana, int krok
+                double sygnalKontrolny, wartZad;
+                int krokOdebrany;
+                in >> sygnalKontrolny >> wartZad >> krokOdebrany;
+
+                // Przypisujemy do pól
+                wyjsciePID    = sygnalKontrolny;
+                wartoscZadana = wartZad;
+                krok          = krokOdebrany;
+
+                // Teraz wywołujemy model ARX
+                double y = modelARX->krok(sygnalKontrolny);
+                wynik = y;
+
+                qDebug() << "[Odbiornik] Odebrano MSG_CONTROL:"
+                         << "u =" << sygnalKontrolny
+                         << "wartZad =" << wartZad
+                         << "krok =" << krokOdebrany
+                         << "=> ARX y =" << y;
+                break;
+            }
+            default:
+                qDebug() << "[Odbiornik] Nieznany typ wiadomości:" << msgType;
+                // Jeżeli trafi jakiś nieobsługiwany bajt, można przerwać pętlę,
+                // by nie wpadać w nieskończoną pętlę odczytu.
+                return;
+            }
+        }
     }
 };
 
@@ -742,7 +851,7 @@ public:
                 wartoscZadanaLokalna=wartoscZadana;
                 wartoscProcesu=nadajnik.getWynik();
                 sygnalKontrolny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
-                nadajnik.sendData(sygnalKontrolny,wartoscZadana,interval);
+                nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);
                 obliczone=wartoscProcesu;
                 return obliczone;
             }
@@ -791,7 +900,15 @@ public:
     void setKrok(int kroknew) { krok = kroknew; }
     void setInterval(int intervalnew){interval=intervalnew;}
     int getInterval(){return interval;}
+    bool getCzyDziala() const {
+        return czyDziala;
+    }
 
+
+    void setCzyDziala(bool wartosc) {
+        czyDziala = wartosc;
+    }
+    double getWartoscProcesu(){return wartoscProcesu;}
 private:
     ARXModel model;
     PIDController kontroler;
@@ -809,4 +926,5 @@ private:
     double obliczone=0.0;
     bool trybPracyInstancji=false;
     bool isOnlineModeON = false;
+    bool czyDziala =false;
 };

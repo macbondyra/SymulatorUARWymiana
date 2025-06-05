@@ -38,7 +38,9 @@ Symulator::Symulator(QWidget *parent)
             SIGNAL(currentIndexChanged(int)),
             this,
             SLOT(on_comboBox_mode_currentIndexChanged(int)));
-
+    connect(uklad.getOdbiornik(), &Odbiornik::startTimer, this, &Symulator::on_button_start_clicked);
+    connect(uklad.getOdbiornik(), &Odbiornik::stopTimer, this, &Symulator::on_button_stop_clicked);
+    connect(uklad.getOdbiornik(), &Odbiornik::odebranoInterval, this, &Symulator::zmienIntervalModel);
     // Inicjalne ustawienie wartości
     ui->comboBox_mode->addItem("PRE_SUM");
     ui->comboBox_mode->addItem("POST_SUM");
@@ -127,11 +129,6 @@ Symulator::~Symulator()
 
 void Symulator::nextStep()
 {
-    if(uklad.getTrybPracyInstancji() && uklad.getOdbiornik()->getOdebranyInterval()>0){
-        uklad.setInterval(uklad.getOdbiornik()->getOdebranyInterval());
-        timer->setInterval(uklad.getOdbiornik()->getOdebranyInterval());
-        ui->spinbox_interval->setValue(uklad.getOdbiornik()->getOdebranyInterval());
-    }
     uklad.setInterval(timer->interval());
     obecnaWartosc = uklad.symulacja();
     uklad.inkrementujKrok();
@@ -355,6 +352,10 @@ void Symulator::on_button_reset_clicked()
 
 void Symulator::on_button_start_clicked()
 {
+    uklad.setCzyDziala(true);
+    if (uklad.getIsOnlineModeON() && !uklad.getTrybPracyInstancji()) {
+        uklad.getNadajnik()->sendCommand(true);
+    }
     ui->button_reset->setEnabled(true);
     ui->button_start->setEnabled(false);
     ui->button_stop->setEnabled(true);
@@ -395,6 +396,10 @@ void Symulator::on_button_start_clicked()
 
 void Symulator::on_button_stop_clicked()
 {
+    uklad.setCzyDziala(false);
+    if (uklad.getIsOnlineModeON() && !uklad.getTrybPracyInstancji()) {
+        uklad.getNadajnik()->sendCommand(false);
+    }
     ui->button_start->setEnabled(true);
     ui->button_stop->setEnabled(false);
     timer->stop();
@@ -545,4 +550,9 @@ void Symulator::on_button_disconnect_clicked()
             uklad.setIsOnlineModeON(false);
         }
     }
+}
+
+void Symulator::zmienIntervalModel()
+{
+    timer->setInterval(uklad.getOdbiornik()->getOdebranyInterval());
 }
