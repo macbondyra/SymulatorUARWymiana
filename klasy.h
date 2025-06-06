@@ -609,7 +609,9 @@ private slots:
             QByteArray response = socket.readAll();
             QDataStream in(&response, QIODevice::ReadOnly);
             double y;
+            int krokOdbiornika;
             in >> y;
+            in >> krokOdbiornika;
 
             // policz sygnał sterujący
             wartoscZadana = wartosc->obliczWartosc((*krok));
@@ -640,7 +642,7 @@ class Odbiornik : public QObject
 {
     Q_OBJECT
 public:
-    Odbiornik(QObject *parent, ARXModel *model)
+    Odbiornik(QObject *parent, ARXModel *model,int* krokUklad)
         : QObject(parent)
         , server(this)
         , ip("")
@@ -648,6 +650,7 @@ public:
         , connectionState(false)
         , modelARX(model)
         , clientSocket(nullptr)
+        , krokUkladu(krokUklad)
     {
         connect(&server, &QTcpServer::newConnection, this, &Odbiornik::newClient);
     }
@@ -676,11 +679,12 @@ public:
     }
     void setModel(ARXModel *modelNew) { modelARX = modelNew; }
     int getOdebranyInterval(){return odebranyInterval;}
-    void sendData(double data)
+    void sendData(double data,int krok)
     {
         QByteArray dataSent;
         QDataStream stream(&dataSent, QIODevice::WriteOnly);
         stream << data;
+        stream << krok;
         if (clientSocket->isWritable())
             clientSocket->write(dataSent);
     }
@@ -709,6 +713,7 @@ public:
     void setCzyTrybJednostronny(bool tryb){
         czyTrybJednostronny =tryb;
     }
+    bool getCzyZsynchronizowane() const { return czyZsynchronizowane; }
 signals:
     void startTimer();
     void stopTimer();
@@ -729,8 +734,10 @@ private:
     double wartoscZadana=0;
     bool czyDziala=false;
     int krok=0;
+    int* krokUkladu=nullptr;
     QByteArray buffer;              // bufor do gromadzenia nadchodzących bajtów
     bool czyTrybJednostronny=false;
+    bool czyZsynchronizowane=true;
 
 
 private slots:
@@ -790,10 +797,19 @@ private slots:
                 int krokOdebrany;
                 in >> sygnalKontrolny >> wartZad >> krokOdebrany;
 
+                if (krokOdebrany == *krokUkladu) {
+                    czyZsynchronizowane = true;
+                } else {
+                    czyZsynchronizowane = false;
+                    qDebug() << "[Odbiornik] Rozbieżność kroków! Lokalny krok ="
+                             << krok << ", odebrany krokiem nadajnika ="
+                             << krokOdebrany;
+                }
+
                 // Przypisujemy do pól
                 wyjsciePID    = sygnalKontrolny;
                 wartoscZadana = wartZad;
-                krok          = krokOdebrany;
+                krok = krokOdebrany;
 
                 // Teraz wywołujemy model ARX
                 double y = modelARX->krok(sygnalKontrolny);
@@ -805,7 +821,8 @@ private slots:
                          << "u =" << sygnalKontrolny
                          << "wartZad =" << wartZad
                          << "krok =" << krokOdebrany
-                         << "=> ARX y =" << y;
+                         << "=> ARX y =" << y
+                         << "| zsynchronizowane? =" << czyZsynchronizowane;
                 break;
             }
             case MSG_RESET:{
@@ -836,7 +853,7 @@ class UkladSterowania
 public:
     UkladSterowania()
         : nadajnik(nullptr, &kontroler, &krok, &wartosc)
-        , odbiornik(nullptr, &model) {};
+        , odbiornik(nullptr, &model,&krok) {};
     ~UkladSterowania() {};
     void setPID(double kp, double ki, double kd, double dolnyLimit = -1.0, double gornyLimit = 1.0)
     {
@@ -889,25 +906,27 @@ public:
         else {
             if (trybPracyInstancji == 1) {
                 qDebug() << obliczone;
-                wartoscZadanaLokalna=wartosc.obliczWartosc(krok);
-                sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
                 sygnalKontrolny=odbiornik.getWyjsciePID();
                 wartoscZadana=odbiornik.getWartoscZadana();
                 wartoscProcesu=odbiornik.getWynik();
+                odbiornik.sendData(wartoscProcesu,odbiornik.getKrok());
+                //Liczy lokalne wartosci po wysłaniu
+                wartoscZadanaLokalna=wartosc.obliczWartosc(krok);
+                sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,1.0);
                 wartoscProcesuLokalna=model.krok(sygnalKontrolny);
-                odbiornik.sendData(wartoscProcesu);
                 obliczone = wartoscProcesu;
                 return obliczone;
             }
 
             else {
                 wartoscZadana=wartosc.obliczWartosc(krok);
-                sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
-                wartoscProcesuLokalna=model.krok(sygnalKontrolny);
-                wartoscZadanaLokalna=wartoscZadana;
                 wartoscProcesu=nadajnik.getWynik();
                 sygnalKontrolny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
                 nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);
+                //Liczy lokalne wartosci po wysłaniu
+                wartoscZadanaLokalna=wartoscZadana;
+                sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
+                wartoscProcesuLokalna=model.krok(sygnalKontrolny);
                 obliczone=wartoscProcesu;
                 return obliczone;
             }
