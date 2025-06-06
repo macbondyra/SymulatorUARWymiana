@@ -17,6 +17,7 @@ public:
     QString getIp();
     quint16 getPort();
     int getTryb();
+    bool getCzyTrybJednostronny();
 private slots:
     void on_comboBoxTryb_currentIndexChanged(int index);
 

@@ -463,7 +463,8 @@ enum MessageType : qint8 {
     MSG_COMMAND  = 1,  // wysyła tylko bool czyDziala
     MSG_INTERVAL = 2,  // wysyła tylko int interval
     MSG_CONTROL  = 3,   // wysyła: double sygnalKontrolny, double wartoscZadana, int krok
-    MSG_RESET = 4
+    MSG_RESET = 4,
+    MSG_MODE = 5
 };
 
 class Nadajnik : public QObject
@@ -528,6 +529,18 @@ public:
         stream << interval;
         socket.write(out);
     }
+    void sendMode(){
+        if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
+            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
+            return;
+        }
+        QByteArray out;
+        QDataStream stream(&out, QIODevice::WriteOnly);
+        // 1 bajt = typ wiadomości
+        stream << (qint8)MSG_MODE;
+        stream << czyTrybJednostronny;
+        socket.write(out);
+    }
     void sendReset(){
         if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
             QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
@@ -563,6 +576,12 @@ public:
         socket.disconnectFromHost();
         connectionState = false;
     }
+    void setCzyTrybJednostronny(bool tryb){
+        czyTrybJednostronny = tryb;
+    }
+    bool getCzyTrybJednostronny(){
+        return czyTrybJednostronny;
+    }
 
 private:
     PIDController *kontroler;
@@ -579,6 +598,7 @@ private:
     double wartoscZadana=0;
     double wynikPID=0;
     int *krok;
+    bool czyTrybJednostronny;
 
 signals:
     void startTimer();
@@ -606,6 +626,7 @@ private slots:
     {
         QMessageBox::information(nullptr, "Status", "Połączono pomyślnie z hostem!");
         connectionState = true;
+        sendMode();
     }
     void onConnectionError(QAbstractSocket::SocketError socketError)
     {
@@ -682,11 +703,19 @@ public:
     void setKrok(int wartosc) {
         krok = wartosc;
     }
+    bool getCzyTrybJednostronny(){
+        return czyTrybJednostronny;
+    }
+    void setCzyTrybJednostronny(bool tryb){
+        czyTrybJednostronny =tryb;
+    }
 signals:
     void startTimer();
     void stopTimer();
     void odebranoInterval();
     void resetObiekt();
+    void schowajInterval();
+    void nextStep();
 private:
     QTcpServer server;
     QString ip;
@@ -701,7 +730,7 @@ private:
     bool czyDziala=false;
     int krok=0;
     QByteArray buffer;              // bufor do gromadzenia nadchodzących bajtów
-
+    bool czyTrybJednostronny=false;
 
 
 private slots:
@@ -739,7 +768,7 @@ private slots:
                 bool dzialaj;
                 in >> dzialaj;
                 czyDziala = dzialaj;
-                if (czyDziala)
+                if (czyDziala && !czyTrybJednostronny)
                     emit startTimer();
                 else
                     emit stopTimer();
@@ -769,7 +798,9 @@ private slots:
                 // Teraz wywołujemy model ARX
                 double y = modelARX->krok(sygnalKontrolny);
                 wynik = y;
-
+                if(czyTrybJednostronny){
+                    emit nextStep();
+                }
                 qDebug() << "[Odbiornik] Odebrano MSG_CONTROL:"
                          << "u =" << sygnalKontrolny
                          << "wartZad =" << wartZad
@@ -779,6 +810,15 @@ private slots:
             }
             case MSG_RESET:{
                 emit resetObiekt();
+                break;
+            }
+            case MSG_MODE:{
+                bool odebranyTryb;
+                in>>odebranyTryb;
+                czyTrybJednostronny=odebranyTryb;
+                if(odebranyTryb==true){
+                    emit schowajInterval();
+                }
                 break;
             }
             default:
@@ -853,8 +893,8 @@ public:
                 sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
                 sygnalKontrolny=odbiornik.getWyjsciePID();
                 wartoscZadana=odbiornik.getWartoscZadana();
-                wartoscProcesu=model.krok(sygnalKontrolny);
-                wartoscProcesuLokalna=wartoscProcesu;
+                wartoscProcesu=odbiornik.getWynik();
+                wartoscProcesuLokalna=model.krok(sygnalKontrolny);
                 odbiornik.sendData(wartoscProcesu);
                 obliczone = wartoscProcesu;
                 return obliczone;

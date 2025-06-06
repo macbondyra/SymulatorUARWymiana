@@ -42,6 +42,8 @@ Symulator::Symulator(QWidget *parent)
     connect(uklad.getOdbiornik(), &Odbiornik::stopTimer, this, &Symulator::on_button_stop_clicked);
     connect(uklad.getOdbiornik(), &Odbiornik::odebranoInterval, this, &Symulator::zmienIntervalModel);
     connect(uklad.getOdbiornik(), &Odbiornik::resetObiekt, this, &Symulator::on_button_reset_clicked);
+    connect(uklad.getOdbiornik(), &Odbiornik::schowajInterval, this, &Symulator::chowajInterval);
+    connect(uklad.getOdbiornik(), &Odbiornik::nextStep, this, &Symulator::nextStep);
     // Inicjalne ustawienie wartości
     ui->comboBox_mode->addItem("PRE_SUM");
     ui->comboBox_mode->addItem("POST_SUM");
@@ -487,6 +489,12 @@ void Symulator::on_button_online_clicked()
             uklad.getNadajnik()->connectToHost();
             ui->groupBox_ARX->hide();
             uklad.setTrybPracyInstancji(false);
+            if(dialogOnline->getCzyTrybJednostronny()){
+                uklad.getNadajnik()->setCzyTrybJednostronny(true);
+            }
+            else{
+                uklad.getNadajnik()->setCzyTrybJednostronny(false);
+            }
         }
         if (tryb == 1) {
             uklad.getOdbiornik()->setIp(ip);
@@ -495,6 +503,9 @@ void Symulator::on_button_online_clicked()
             ui->groupBox_PID->hide();
             ui->groupBox_UstawieniaFiltra->hide();
             ui->groupBox_WartoscZadana->hide();
+            ui->button_start->hide();
+            ui->button_stop->hide();
+            ui->button_reset->hide();
             uklad.setTrybPracyInstancji(true);
         }
     }
@@ -530,6 +541,9 @@ void Symulator::on_TestyOnline_clicked()
             ui->groupBox_PID->hide();
             ui->groupBox_UstawieniaFiltra->hide();
             ui->groupBox_WartoscZadana->hide();
+            ui->button_start->hide();
+            ui->button_stop->hide();
+            ui->button_reset->hide();
             uklad.setTrybPracyInstancji(true);
         }
     }
@@ -566,4 +580,10 @@ void Symulator::zmienIntervalModel()
 {
     timer->setInterval(uklad.getOdbiornik()->getOdebranyInterval());
     ui->spinbox_interval->setValue(uklad.getOdbiornik()->getOdebranyInterval());
+}
+
+void Symulator::chowajInterval()
+{
+    ui->spinbox_interval->hide();
+    timer->stop();
 }

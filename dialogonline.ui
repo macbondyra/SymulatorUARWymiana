@@ -20,102 +20,175 @@
    <string>Ustawienia Połączenia</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <!-- ===== QGroupBox "PID" ===== -->
    <item>
-    <layout class="QFormLayout" name="formLayout">
+    <widget class="QGroupBox" name="groupBoxPID">
+     <property name="title">
+      <string>PID</string>
+     </property>
+     <layout class="QFormLayout" name="formLayoutPID">
+      <!-- Rząd 0: Label „Adres IP:” + ipLayout -->
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelIp">
+        <property name="text">
+         <string>Adres IP:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <layout class="QHBoxLayout" name="ipLayout">
+        <item>
+         <widget class="QLineEdit" name="ipPart1">
+          <property name="inputMask">
+           <string/>
+          </property>
+          <property name="maxLength">
+           <number>3</number>
+          </property>
+          <property name="maximumWidth">
+           <number>40</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="dotLabel1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="ipPart2">
+          <property name="inputMask">
+           <string/>
+          </property>
+          <property name="maxLength">
+           <number>3</number>
+          </property>
+          <property name="maximumWidth">
+           <number>40</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="dotLabel2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="ipPart3">
+          <property name="inputMask">
+           <string/>
+          </property>
+          <property name="maxLength">
+           <number>3</number>
+          </property>
+          <property name="maximumWidth">
+           <number>40</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="dotLabel3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="ipPart4">
+          <property name="inputMask">
+           <string/>
+          </property>
+          <property name="maxLength">
+           <number>3</number>
+          </property>
+          <property name="maximumWidth">
+           <number>40</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <!-- Rząd 1: pusty label (wyrównanie) + tryb jednostronny -->
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelEmptyPID">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QRadioButton" name="trybJednostronny">
+        <property name="text">
+         <string>Tryb Jednostronny</string>
+        </property>
+       </widget>
+      </item>
+      <!-- Rząd 2: pusty label (wyrównanie) + tryb obustronny -->
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelEmptyPID2">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QRadioButton" name="trybObustronny">
+        <property name="text">
+         <string>Tryb Obustronny</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <!-- ===== Pozostałe elementy formularza: Port i Opcja ===== -->
+   <item>
+    <layout class="QFormLayout" name="formLayoutRemaining">
      <item row="0" column="0">
-      <widget class="QLabel" name="labelIp">
-       <property name="text">
-        <string>Adres IP:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <layout class="QHBoxLayout" name="ipLayout">
-       <item>
-        <widget class="QLineEdit" name="ipPart1">
-         <property name="inputMask">
-          <string/>
-         </property>
-         <property name="maxLength">
-          <number>3</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="dotLabel1">
-         <property name="text">
-          <string>.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="ipPart2">
-         <property name="inputMask">
-          <string/>
-         </property>
-         <property name="maxLength">
-          <number>3</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="dotLabel2">
-         <property name="text">
-          <string>.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="ipPart3">
-         <property name="inputMask">
-          <string/>
-         </property>
-         <property name="maxLength">
-          <number>3</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="dotLabel3">
-         <property name="text">
-          <string>.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="ipPart4">
-         <property name="inputMask">
-          <string/>
-         </property>
-         <property name="maxLength">
-          <number>3</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0">
       <widget class="QLabel" name="labelPort">
        <property name="text">
         <string>Port:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="0" column="1">
       <widget class="QLineEdit" name="lineEditPort"/>
      </item>
-     <item row="2" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="labelCombo">
        <property name="text">
         <string>Opcja:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="1" column="1">
       <widget class="QComboBox" name="comboBoxTryb"/>
      </item>
     </layout>
    </item>
+   <!-- ===== Przycisk OK/Cancel ===== -->
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">

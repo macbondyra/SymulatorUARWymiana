@@ -67,6 +67,8 @@ private slots:
     void on_button_disconnect_clicked();
 
     void zmienIntervalModel();
+
+    void chowajInterval();
 private:
     Ui::Symulator *ui;
     DialogOnline *dialogOnline;

@@ -33,18 +33,22 @@ int DialogOnline::getTryb()
     return wybor;
 }
 
+bool DialogOnline::getCzyTrybJednostronny()
+{
+    if(ui->trybJednostronny->isChecked()){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 void DialogOnline::on_comboBoxTryb_currentIndexChanged(int index)
 {
     if (index == 1) {
-        ui->ipPart1->hide();
-        ui->ipPart2->hide();
-        ui->ipPart3->hide();
-        ui->ipPart4->hide();
+        ui->groupBoxPID->hide();
     }
     if (index == 0) {
-        ui->ipPart1->setVisible(true);
-        ui->ipPart2->setVisible(true);
-        ui->ipPart3->setVisible(true);
-        ui->ipPart4->setVisible(true);
+        ui->groupBoxPID->show();
     }
 }
