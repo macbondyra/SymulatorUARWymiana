@@ -24,7 +24,7 @@ class Ui_dialogTestOnline
 {
 public:
     QDialogButtonBox *buttonBox;
-    QWidget *widget;
+    QWidget *layoutWidget;
     QVBoxLayout *verticalLayout;
     QRadioButton *TestServer;
     QRadioButton *TestNadajnik;
@@ -39,18 +39,18 @@ public:
         buttonBox->setGeometry(QRect(30, 240, 341, 32));
         buttonBox->setOrientation(Qt::Orientation::Horizontal);
         buttonBox->setStandardButtons(QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok);
-        widget = new QWidget(dialogTestOnline);
-        widget->setObjectName("widget");
-        widget->setGeometry(QRect(60, 90, 94, 52));
-        verticalLayout = new QVBoxLayout(widget);
+        layoutWidget = new QWidget(dialogTestOnline);
+        layoutWidget->setObjectName("layoutWidget");
+        layoutWidget->setGeometry(QRect(60, 90, 94, 52));
+        verticalLayout = new QVBoxLayout(layoutWidget);
         verticalLayout->setObjectName("verticalLayout");
         verticalLayout->setContentsMargins(0, 0, 0, 0);
-        TestServer = new QRadioButton(widget);
+        TestServer = new QRadioButton(layoutWidget);
         TestServer->setObjectName("TestServer");
 
         verticalLayout->addWidget(TestServer);
 
-        TestNadajnik = new QRadioButton(widget);
+        TestNadajnik = new QRadioButton(layoutWidget);
         TestNadajnik->setObjectName("TestNadajnik");
 
         verticalLayout->addWidget(TestNadajnik);
