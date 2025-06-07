@@ -797,7 +797,7 @@ private slots:
                 int krokOdebrany;
                 in >> sygnalKontrolny >> wartZad >> krokOdebrany;
 
-                if (krokOdebrany == *krokUkladu) {
+                if (krokOdebrany == *krokUkladu-1) {
                     czyZsynchronizowane = true;
                 } else {
                     czyZsynchronizowane = false;
