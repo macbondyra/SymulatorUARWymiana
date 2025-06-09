@@ -234,24 +234,21 @@ public:
     {
         if (rodzaj == rodzajeWartosci::skok) {
             return max;
-        } else if (rodzaj == rodzajeWartosci::kwadrat) {
-            if (krok % (okres / 2) == 0) {
-                minMax = !minMax;
-            }
-            if (minMax == 0) {
-                return min;
-            } else {
-                if ((krok % (okres / 2)) > (okres / 2 * 0.01 * wypelnienie))
-                    return min;
-                else
-                    return max;
-            }
-        } else {
-            double amplituda = (max - min) / 2;
-            double przesuniecie = (max + min) / 2;
-            double kat = (static_cast<double>(krok) / okres) * 2.0 * 3.14;
-            return amplituda * sin(kat) + przesuniecie;
         }
+        else if (rodzaj == rodzajeWartosci::sinus) {
+            double amplituda   = (max - min) / 2.0;
+            double przesuniecie = (max + min) / 2.0;
+            double kat          = (static_cast<double>(krok) / okres) * 2.0 * M_PI;
+            return amplituda * std::sin(kat) + przesuniecie;
+        }
+        else if (rodzaj == rodzajeWartosci::kwadrat) {
+            if (okres <= 0) return min;               // ochrona przed dzieleniem przez 0
+            int lokalnyKrok = krok % okres;          // 0..okres-1
+            double prog     = okres * (wypelnienie / 100.0);
+            // przez 'prog' kroków sygnał jest wysoki (max), potem niski (min)
+            return (lokalnyKrok < prog) ? max : min;
+        }
+        return 0.0;
     }
 
     void zapiszText(const std::string &filename)
