@@ -437,7 +437,11 @@
                   <widget class="QDoubleSpinBox" name="spinbox_maksimumY"/>
                  </item>
                  <item>
-                  <widget class="QSpinBox" name="spinbox_okres"/>
+                  <widget class="QSpinBox" name="spinbox_okres">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QSpinBox" name="spinBox_wypelnienie">

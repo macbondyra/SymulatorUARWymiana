@@ -44,6 +44,7 @@ Symulator::Symulator(QWidget *parent)
     connect(uklad.getOdbiornik(), &Odbiornik::resetObiekt, this, &Symulator::on_button_reset_clicked);
     connect(uklad.getOdbiornik(), &Odbiornik::schowajInterval, this, &Symulator::chowajInterval);
     connect(uklad.getOdbiornik(), &Odbiornik::nextStep, this, &Symulator::nextStep);
+    connect(uklad.getNadajnik(), &Nadajnik::reset, this, &Symulator::on_button_reset_clicked);
     // Inicjalne ustawienie wartości
     ui->comboBox_mode->addItem("PRE_SUM");
     ui->comboBox_mode->addItem("POST_SUM");

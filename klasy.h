@@ -599,9 +599,11 @@ private:
     double wynikPID=0;
     int *krok;
     bool czyTrybJednostronny;
+    const int PROG_BLEDU =2;
 
 signals:
     void startTimer();
+    void reset();
 private slots:
     void socketReadyRead()
     {
@@ -612,7 +614,16 @@ private slots:
             int krokOdbiornika;
             in >> y;
             in >> krokOdbiornika;
-
+            if(std::abs(krokOdbiornika - *krok) <= PROG_BLEDU){
+                qDebug()<<"SYNCHRONIZACJA";
+                qDebug()<<"Krok odebrany"<<krokOdbiornika;
+                qDebug()<<"Krok lokalny"<<*krok;
+            }
+            else{
+                qDebug()<<"Desync";
+                qDebug()<<"Krok odebrany"<<krokOdbiornika;
+                qDebug()<<"Krok lokalny"<<*krok;
+            }
             // policz sygnał sterujący
             wartoscZadana = wartosc->obliczWartosc((*krok));
             double u = kontroler->oblicz(wartoscZadana, y, 1.0);
@@ -629,6 +640,8 @@ private slots:
         QMessageBox::information(nullptr, "Status", "Połączono pomyślnie z hostem!");
         connectionState = true;
         sendMode();
+        sendReset();
+        emit reset();
     }
     void onConnectionError(QAbstractSocket::SocketError socketError)
     {
@@ -738,7 +751,7 @@ private:
     QByteArray buffer;              // bufor do gromadzenia nadchodzących bajtów
     bool czyTrybJednostronny=false;
     bool czyZsynchronizowane=true;
-
+    const int PROG_BLEDU=2;
 
 private slots:
     void newClient()
@@ -797,7 +810,7 @@ private slots:
                 int krokOdebrany;
                 in >> sygnalKontrolny >> wartZad >> krokOdebrany;
 
-                if (krokOdebrany == *krokUkladu-1) {
+                if (std::abs(krokOdebrany - *krokUkladu) <= PROG_BLEDU) {
                     czyZsynchronizowane = true;
                 } else {
                     czyZsynchronizowane = false;
@@ -921,7 +934,7 @@ public:
             else {
                 wartoscZadana=wartosc.obliczWartosc(krok);
                 wartoscProcesu=nadajnik.getWynik();
-                sygnalKontrolny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
+                sygnalKontrolny=nadajnik.getWynikPID();
                 nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);
                 //Liczy lokalne wartosci po wysłaniu
                 wartoscZadanaLokalna=wartoscZadana;
