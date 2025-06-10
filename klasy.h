@@ -484,6 +484,7 @@ public:
     {
         connect(&socket, &QTcpSocket::readyRead, this, &Nadajnik::socketReadyRead);
         connect(&socket, &QTcpSocket::connected, this, &Nadajnik::onConnected);
+        connect(&socket, &QTcpSocket::disconnected, this, &Nadajnik::onDisconnected);
         connect(&socket,
                 QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::errorOccurred),
                 this,
@@ -601,6 +602,7 @@ private:
 signals:
     void startTimer();
     void reset();
+    void rozlaczono();
 private slots:
     void socketReadyRead()
     {
@@ -632,6 +634,13 @@ private slots:
             QMessageBox::critical(nullptr, "Błąd", QString("Wystąpił wyjątek: %1").arg(e.what()));
         }
     }
+    void onDisconnected(){
+        {
+            qDebug() << "[Nadajnik] Rozłączono od odbiornika!";
+            connectionState = false;
+            emit rozlaczono();
+        }
+    }
     void onConnected()
     {
         QMessageBox::information(nullptr, "Status", "Połączono pomyślnie z hostem!");
@@ -644,7 +653,6 @@ private slots:
     {
         Q_UNUSED(socketError)
         QMessageBox::information(nullptr, "Status", "Błąd połączenia: " + socket.errorString());
-        connectionState = false;
     }
 };
 
@@ -724,6 +732,20 @@ public:
         czyTrybJednostronny =tryb;
     }
     bool getCzyZsynchronizowane() const { return czyZsynchronizowane; }
+
+    void disconnect()
+    {
+        if (clientSocket) {
+            clientSocket->disconnectFromHost();
+            clientSocket->deleteLater();
+            clientSocket = nullptr;
+        }
+        if (server.isListening()) {
+            server.close();
+        }
+        connectionState = false;
+        emit rozlaczono();
+    }
 signals:
     void startTimer();
     void stopTimer();
@@ -731,6 +753,7 @@ signals:
     void resetObiekt();
     void schowajInterval();
     void nextStep();
+    void rozlaczono();
 private:
     QTcpServer server;
     QString ip;
@@ -756,7 +779,7 @@ private slots:
         clientSocket = server.nextPendingConnection();
         if (clientSocket) {
             connect(clientSocket, &QTcpSocket::readyRead, this, &Odbiornik::readData);
-            connect(clientSocket, &QTcpSocket::disconnected, clientSocket, &QTcpSocket::deleteLater);
+            connect(clientSocket, &QTcpSocket::disconnected, this, &Odbiornik::disconnect);
             QMessageBox::information(nullptr,
                                      "Status",
                                      "Nowy klient połączony: "

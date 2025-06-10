@@ -45,6 +45,9 @@ Symulator::Symulator(QWidget *parent)
     connect(uklad.getOdbiornik(), &Odbiornik::schowajInterval, this, &Symulator::chowajInterval);
     connect(uklad.getOdbiornik(), &Odbiornik::nextStep, this, &Symulator::nextStep);
     connect(uklad.getNadajnik(), &Nadajnik::reset, this, &Symulator::on_button_reset_clicked);
+    connect(uklad.getOdbiornik(), &Odbiornik::rozlaczono, this, &Symulator::przejdzDoTrybuLokalnego);
+    connect(uklad.getNadajnik(), &Nadajnik::rozlaczono, this, &Symulator::przejdzDoTrybuLokalnego);
+
     // Inicjalne ustawienie wartości
     ui->comboBox_mode->addItem("PRE_SUM");
     ui->comboBox_mode->addItem("POST_SUM");
@@ -549,6 +552,29 @@ void Symulator::on_TestyOnline_clicked()
         }
     }
 }
+void Symulator::przejdzDoTrybuLokalnego()
+{
+    QMessageBox::information(this, "Rozłączono", "Połączenie zostało przerwane. Przechodzę do trybu lokalnego.");
+
+    // Odblokowanie GUI
+    ui->groupBox_PID->show();
+    ui->groupBox_UstawieniaFiltra->show();
+    ui->groupBox_WartoscZadana->show();
+    ui->button_start->show();
+    ui->button_stop->show();
+    ui->button_reset->show();
+    ui->groupBox_ARX->show();
+
+    uklad.setIsOnlineModeON(false);
+    uklad.setTrybPracyInstancji(false);
+
+    // Timer i GUI
+    timer->stop();
+    ui->button_start->setEnabled(true);
+    ui->button_stop->setEnabled(false);
+    ui->button_reset->setEnabled(false);
+    ui->spinbox_interval->show();
+}
 
 void Symulator::on_button_disconnect_clicked()
 {
@@ -568,6 +594,10 @@ void Symulator::on_button_disconnect_clicked()
             ui->groupBox_PID->show();
             ui->groupBox_UstawieniaFiltra->show();
             ui->groupBox_WartoscZadana->show();
+            ui->button_start->show();
+            ui->button_stop->show();
+            ui->button_reset->show();
+            ui->spinbox_interval->show();
             uklad.setIsOnlineModeON(false);
         } else {
             uklad.getNadajnik()->disconnect();

@@ -69,6 +69,7 @@ private slots:
     void zmienIntervalModel();
 
     void chowajInterval();
+    void przejdzDoTrybuLokalnego();
 private:
     Ui::Symulator *ui;
     DialogOnline *dialogOnline;
