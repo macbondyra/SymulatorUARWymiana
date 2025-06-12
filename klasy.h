@@ -502,7 +502,6 @@ public:
     void sendCommand(bool czyDziala)
     {
         if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
-            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
             return;
         }
         QByteArray out;
@@ -517,7 +516,6 @@ public:
     void sendInterval(int interval)
     {
         if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
-            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
             return;
         }
         QByteArray out;
@@ -529,7 +527,6 @@ public:
     }
     void sendMode(){
         if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
-            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
             return;
         }
         QByteArray out;
@@ -541,7 +538,6 @@ public:
     }
     void sendReset(){
         if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
-            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
             return;
         }
         QByteArray out;
@@ -555,7 +551,6 @@ public:
     void sendControl(double data, double wartoscZadana, int krok)
     {
         if (!connectionState || socket.state() != QAbstractSocket::ConnectedState) {
-            QMessageBox::warning(nullptr, "Ostrzeżenie", "Brak połączenia z serwerem!");
             return;
         }
         QByteArray out;
@@ -699,6 +694,10 @@ public:
     int getOdebranyInterval(){return odebranyInterval;}
     void sendData(double data,int krok)
     {
+        if (!clientSocket || clientSocket->state() != QAbstractSocket::ConnectedState) {
+            qWarning() << "[Odbiornik] Nie można wysłać danych – brak połączenia";
+            return;
+        }
         QByteArray dataSent;
         QDataStream stream(&dataSent, QIODevice::WriteOnly);
         stream << data;
@@ -733,17 +732,17 @@ public:
     }
     bool getCzyZsynchronizowane() const { return czyZsynchronizowane; }
 
-    void disconnect()
+    void onClientDisconnected()
     {
+        connectionState = false;
         if (clientSocket) {
-            clientSocket->disconnectFromHost();
+            clientSocket->disconnect();
             clientSocket->deleteLater();
             clientSocket = nullptr;
         }
         if (server.isListening()) {
             server.close();
         }
-        connectionState = false;
         emit rozlaczono();
     }
 signals:
@@ -779,7 +778,7 @@ private slots:
         clientSocket = server.nextPendingConnection();
         if (clientSocket) {
             connect(clientSocket, &QTcpSocket::readyRead, this, &Odbiornik::readData);
-            connect(clientSocket, &QTcpSocket::disconnected, this, &Odbiornik::disconnect);
+            connect(clientSocket, &QTcpSocket::disconnected, this, &Odbiornik::onClientDisconnected);
             QMessageBox::information(nullptr,
                                      "Status",
                                      "Nowy klient połączony: "
