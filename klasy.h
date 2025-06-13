@@ -461,7 +461,8 @@ enum MessageType : qint8 {
     MSG_INTERVAL = 2,  // wysyła tylko int interval
     MSG_CONTROL  = 3,   // wysyła: double sygnalKontrolny, double wartoscZadana, int krok
     MSG_RESET = 4,
-    MSG_MODE = 5
+    MSG_MODE = 5,
+    MSG_RESYNC=6
 };
 
 class Nadajnik : public QObject
@@ -562,6 +563,15 @@ public:
         stream << krok;
         socket.write(out);
     }
+    void sendResync(){
+        QByteArray out;
+        QDataStream stream(&out, QIODevice::WriteOnly);
+        // 1 bajt = typ wiadomości, potem double, double, int
+        stream << (qint8)MSG_RESYNC;
+        stream << *krok;
+        stream << wynikPID;
+        socket.write(out);
+    }
 
 
     void disconnect()
@@ -617,6 +627,8 @@ private slots:
                 qDebug()<<"Desync";
                 qDebug()<<"Krok odebrany"<<krokOdbiornika;
                 qDebug()<<"Krok lokalny"<<*krok;
+                qDebug()<<"Wysyłam RESYNC";
+                sendResync();
             }
             // policz sygnał sterujący
             wartoscZadana = wartosc->obliczWartosc((*krok));
@@ -892,6 +904,15 @@ private slots:
                 }
                 break;
             }
+            case MSG_RESYNC:{
+                int krokOdebrany;
+                double wynikPidOdebrany;
+                in>>krokOdebrany;
+                in>>wynikPidOdebrany;
+                *krokUkladu = krokOdebrany;
+                wyjsciePID=wynikPidOdebrany;
+                break;
+            }
             default:
                 qDebug() << "[Odbiornik] Nieznany typ wiadomości:" << msgType;
                 // Jeżeli trafi jakiś nieobsługiwany bajt, można przerwać pętlę,
@@ -902,10 +923,11 @@ private slots:
     }
 };
 
-class UkladSterowania
+class UkladSterowania : QObject
 {
+    Q_OBJECT
 public:
-    UkladSterowania()
+    UkladSterowania(QObject* parent = nullptr)
         : nadajnik(nullptr, &kontroler, &krok, &wartosc)
         , odbiornik(nullptr, &model,&krok) {};
     ~UkladSterowania() {};
@@ -963,7 +985,7 @@ public:
                 sygnalKontrolny=odbiornik.getWyjsciePID();
                 wartoscZadana=odbiornik.getWartoscZadana();
                 wartoscProcesu=odbiornik.getWynik();
-                odbiornik.sendData(wartoscProcesu,odbiornik.getKrok());
+                odbiornik.sendData(wartoscProcesu,krok);
                 //Liczy lokalne wartosci po wysłaniu
                 wartoscZadanaLokalna=wartosc.obliczWartosc(krok);
                 sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,1.0);
@@ -973,7 +995,7 @@ public:
             }
 
             else {
-                wartoscZadana=wartosc.obliczWartosc(krok);
+                wartoscZadana=nadajnik.getWartoscZadana();
                 wartoscProcesu=nadajnik.getWynik();
                 sygnalKontrolny=nadajnik.getWynikPID();
                 nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);

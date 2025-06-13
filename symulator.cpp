@@ -601,6 +601,7 @@ void Symulator::on_button_disconnect_clicked()
             przejdzDoTrybuLokalnego();
         } else {
             uklad.getNadajnik()->disconnect();
+            uklad.getNadajnik()->setCzyTrybJednostronny(false);
             przejdzDoTrybuLokalnego();
         }
     }
