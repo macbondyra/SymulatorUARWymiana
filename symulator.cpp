@@ -598,18 +598,10 @@ void Symulator::on_button_disconnect_clicked()
         if (uklad.getTrybPracyInstancji()) {
             uklad.getOdbiornik()->disconnect();
             uklad.getOdbiornik()->stopListening();
-            ui->groupBox_PID->show();
-            ui->groupBox_UstawieniaFiltra->show();
-            ui->groupBox_WartoscZadana->show();
-            ui->button_start->show();
-            ui->button_stop->show();
-            ui->button_reset->show();
-            ui->spinbox_interval->show();
-            uklad.setIsOnlineModeON(false);
+            przejdzDoTrybuLokalnego();
         } else {
             uklad.getNadajnik()->disconnect();
-            ui->groupBox_ARX->show();
-            uklad.setIsOnlineModeON(false);
+            przejdzDoTrybuLokalnego();
         }
     }
 }

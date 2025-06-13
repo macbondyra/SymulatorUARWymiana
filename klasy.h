@@ -631,7 +631,14 @@ private slots:
     }
     void onDisconnected(){
         {
-            qDebug() << "[Nadajnik] Rozłączono od odbiornika!";
+            QMessageBox* msgBox = new QMessageBox;
+            msgBox->setIcon(QMessageBox::Information);
+            msgBox->setWindowTitle("Status");
+            msgBox->setText("Rozłączono od ARX");
+            msgBox->setStandardButtons(QMessageBox::Ok);
+            msgBox->setWindowModality(Qt::NonModal); // nie blokuje
+            msgBox->setAttribute(Qt::WA_DeleteOnClose); // auto cleanup
+            msgBox->show();
             connectionState = false;
             emit rozlaczono();
         }
@@ -647,7 +654,15 @@ private slots:
     void onConnectionError(QAbstractSocket::SocketError socketError)
     {
         Q_UNUSED(socketError)
-        QMessageBox::information(nullptr, "Status", "Błąd połączenia: " + socket.errorString());
+
+        QMessageBox* msgBox = new QMessageBox;
+        msgBox->setIcon(QMessageBox::Information);
+        msgBox->setWindowTitle("Status");
+        msgBox->setText("Błąd połączenia: " + socket.errorString());
+        msgBox->setStandardButtons(QMessageBox::Ok);
+        msgBox->setWindowModality(Qt::NonModal); // nie blokuje
+        msgBox->setAttribute(Qt::WA_DeleteOnClose); // auto cleanup
+        msgBox->show();
     }
 };
 
@@ -686,7 +701,14 @@ public:
     {
         if (server.isListening()) {
             server.close();
-            QMessageBox::information(nullptr, "Status", "Wyłączono serwer");
+            QMessageBox* msgBox = new QMessageBox;
+            msgBox->setIcon(QMessageBox::Information);
+            msgBox->setWindowTitle("Status");
+            msgBox->setText("Wyłączono serwer");
+            msgBox->setStandardButtons(QMessageBox::Ok);
+            msgBox->setWindowModality(Qt::NonModal); // nie blokuje
+            msgBox->setAttribute(Qt::WA_DeleteOnClose); // auto cleanup
+            msgBox->show();
             connectionState = false;
         }
     }
