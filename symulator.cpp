@@ -554,7 +554,14 @@ void Symulator::on_TestyOnline_clicked()
 }
 void Symulator::przejdzDoTrybuLokalnego()
 {
-    QMessageBox::information(this, "Rozłączono", "Połączenie zostało przerwane. Przechodzę do trybu lokalnego.");
+    QMessageBox* msgBox = new QMessageBox(this);
+    msgBox->setIcon(QMessageBox::Information);
+    msgBox->setWindowTitle("Rozłączono");
+    msgBox->setText("Połączenie zostało przerwane. Przechodzę do trybu lokalnego.");
+    msgBox->setStandardButtons(QMessageBox::Ok);
+    msgBox->setWindowModality(Qt::NonModal);  // <-- kluczowe
+    msgBox->setAttribute(Qt::WA_DeleteOnClose); // <-- usunięcie po zamknięciu
+    msgBox->show();
 
     // Odblokowanie GUI
     ui->groupBox_PID->show();
