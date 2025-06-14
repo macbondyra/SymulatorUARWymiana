@@ -554,6 +554,7 @@ void Symulator::on_TestyOnline_clicked()
 }
 void Symulator::przejdzDoTrybuLokalnego()
 {
+    timer->stop();
     QMessageBox* msgBox = new QMessageBox(this);
     msgBox->setIcon(QMessageBox::Information);
     msgBox->setWindowTitle("Rozłączono");
@@ -576,7 +577,7 @@ void Symulator::przejdzDoTrybuLokalnego()
     uklad.setTrybPracyInstancji(false);
 
     // Timer i GUI
-    timer->stop();
+
     ui->button_start->setEnabled(true);
     ui->button_stop->setEnabled(false);
     ui->button_reset->setEnabled(false);
