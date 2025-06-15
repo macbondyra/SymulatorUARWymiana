@@ -602,7 +602,7 @@ private:
     double wynikPID=0;
     int *krok;
     bool czyTrybJednostronny;
-    const int PROG_BLEDU =2;
+    const int PROG_BLEDU =1;
 
 signals:
     void startTimer();
@@ -911,6 +911,7 @@ private slots:
                 in>>wynikPidOdebrany;
                 *krokUkladu = krokOdebrany;
                 wyjsciePID=wynikPidOdebrany;
+                modelARX->reset();
                 break;
             }
             default:
