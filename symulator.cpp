@@ -597,11 +597,11 @@ void Symulator::on_button_disconnect_clicked()
                                   QMessageBox::Yes | QMessageBox::No);
     if (reply == QMessageBox::Yes) {
         if (uklad.getTrybPracyInstancji()) {
-            uklad.getOdbiornik()->disconnect();
+            uklad.getOdbiornik()->disconnectSocket();
             uklad.getOdbiornik()->stopListening();
             przejdzDoTrybuLokalnego();
         } else {
-            uklad.getNadajnik()->disconnect();
+            uklad.getNadajnik()->rozlacz();
             uklad.getNadajnik()->setCzyTrybJednostronny(false);
             przejdzDoTrybuLokalnego();
         }

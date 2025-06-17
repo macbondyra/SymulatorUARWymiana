@@ -574,7 +574,7 @@ public:
     }
 
 
-    void disconnect()
+    void rozlacz()
     {
         socket.disconnectFromHost();
         connectionState = false;
@@ -722,6 +722,15 @@ public:
             msgBox->setAttribute(Qt::WA_DeleteOnClose); // auto cleanup
             msgBox->show();
             connectionState = false;
+        }
+    }
+    void disconnectSocket(){
+        if (clientSocket->state() == QAbstractSocket::ConnectedState ||
+            clientSocket->state() == QAbstractSocket::ConnectingState)
+        {
+
+            clientSocket->disconnectFromHost();
+
         }
     }
     void setModel(ARXModel *modelNew) { modelARX = modelNew; }
