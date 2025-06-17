@@ -134,8 +134,33 @@ Symulator::~Symulator()
 // std::vector<double> wyniki = uklad.symulacja(100);
 //}
 
+void Symulator::appendSyncStatus()
+{
+    if (!uklad.getIsOnlineModeON())
+        return;
+
+
+    bool nadajnikSync  = uklad.getNadajnik()->getCzyZsynchronizowane();
+    bool odbiornikSync = uklad.getOdbiornik()->getCzyZsynchronizowane();
+    const QString syncSuffix    = " Synchronizacja";
+    const QString desyncSuffix  = " Desynchronizacja";
+    const QString suffix = (nadajnikSync && odbiornikSync)
+                               ? syncSuffix
+                               : desyncSuffix;
+
+    QString curr = ui->statusbar->currentMessage();
+    if (curr.endsWith(syncSuffix)) {
+        curr.chop(syncSuffix.length());
+    } else if (curr.endsWith(desyncSuffix)) {
+        curr.chop(desyncSuffix.length());
+    }
+
+    ui->statusbar->showMessage(curr + suffix);
+}
+
 void Symulator::nextStep()
 {
+    appendSyncStatus();
     uklad.setInterval(timer->interval());
     obecnaWartosc = uklad.symulacja();
     uklad.inkrementujKrok();
@@ -484,7 +509,7 @@ void Symulator::on_button_online_clicked()
         QString ip = dialogOnline->getIp();
         quint16 port = dialogOnline->getPort();
         int tryb = dialogOnline->getTryb();
-        QString trybText = (tryb == 1) ? "ARX" : "PID";
+        QString trybText = (tryb == 1) ? "ARX(Serwer)" : "PID(Klient)";
         QString info = QString("IP: %1 | Port: %2 | Tryb: %3").arg(ip).arg(port).arg(trybText);
         ui->statusbar->showMessage(info);
         if (tryb == 0) {
@@ -519,7 +544,7 @@ void Symulator::on_button_online_clicked()
 //{
 
 //}
-
+/*
 void Symulator::on_TestyOnline_clicked()
 {
     if (uklad.getIsOnlineModeON()) {
@@ -552,6 +577,7 @@ void Symulator::on_TestyOnline_clicked()
         }
     }
 }
+*/
 void Symulator::przejdzDoTrybuLokalnego()
 {
     timer->stop();

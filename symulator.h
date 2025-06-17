@@ -24,6 +24,7 @@ public:
     Symulator(QWidget *parent = nullptr);
     ~Symulator();
     //void liczenie();
+
 private slots:
 
     void nextStep();
@@ -62,7 +63,6 @@ private slots:
 
     void on_button_online_clicked();
 
-    void on_TestyOnline_clicked();
 
     void on_button_disconnect_clicked();
 
@@ -88,7 +88,7 @@ private:
     std::vector<double> rozmiar_wykresu_kontroler_min, rozmiar_wykresu_kontroler_max;
     std::vector<double> rozmiar_wykresu_suma_min, rozmiar_wykresu_suma_max;
     std::vector<double> rozmiar_wykresu_uchyb_min, rozmiar_wykresu_uchyb_max;
-
+    void appendSyncStatus();
     double wykres_kontroler_min = 0, wykres_kontroler_max = 0;
 
     friend Dialog;

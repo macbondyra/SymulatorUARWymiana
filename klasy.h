@@ -585,6 +585,7 @@ public:
     bool getCzyTrybJednostronny(){
         return czyTrybJednostronny;
     }
+    bool getCzyZsynchronizowane(){return czyZsynchronizowane;}
 
 private:
     PIDController *kontroler;
@@ -602,6 +603,7 @@ private:
     double wynikPID=0;
     int *krok;
     bool czyTrybJednostronny;
+    bool czyZsynchronizowane = true;
     const int PROG_BLEDU =1;
 
 signals:
@@ -622,6 +624,7 @@ private slots:
                 qDebug()<<"SYNCHRONIZACJA";
                 qDebug()<<"Krok odebrany"<<krokOdbiornika;
                 qDebug()<<"Krok lokalny"<<*krok;
+                czyZsynchronizowane=true;
             }
             else{
                 qDebug()<<"Desync";
@@ -629,6 +632,7 @@ private slots:
                 qDebug()<<"Krok lokalny"<<*krok;
                 qDebug()<<"Wysyłam RESYNC";
                 sendResync();
+                czyZsynchronizowane=false;
             }
             // policz sygnał sterujący
             wartoscZadana = wartosc->obliczWartosc((*krok));
@@ -813,7 +817,7 @@ private:
     QByteArray buffer;              // bufor do gromadzenia nadchodzących bajtów
     bool czyTrybJednostronny=false;
     bool czyZsynchronizowane=true;
-    const int PROG_BLEDU=2;
+    const int PROG_BLEDU=1;
 
 private slots:
     void newClient()

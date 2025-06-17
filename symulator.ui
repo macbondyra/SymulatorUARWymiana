@@ -612,13 +612,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="TestyOnline">
-          <property name="text">
-           <string>TestyOnline</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="button_zapisz">
           <property name="font">
            <font>
