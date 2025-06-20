@@ -660,11 +660,10 @@ private slots:
                 czyZsynchronizowane=false;
             }
             // policz sygnał sterujący
-            wartoscZadana = wartosc->obliczWartosc((*krok));
-            double u = kontroler->oblicz(wartoscZadana, y, 1.0);
-            wynikPID = u;
+
+
             wynik = y;
-            qDebug() << "PID wyliczył u =" << u;
+            qDebug() << "PID wyliczył u =";
 
         } catch (const std::exception &e) {
             QMessageBox::critical(nullptr, "Błąd", QString("Wystąpił wyjątek: %1").arg(e.what()));
@@ -922,8 +921,6 @@ private slots:
                 krok = krokOdebrany;
 
                 // Teraz wywołujemy model ARX
-                double y = modelARX->krok(sygnalKontrolny);
-                wynik = y;
                 if(czyTrybJednostronny){
                     emit nextStep();
                 }
@@ -931,7 +928,7 @@ private slots:
                          << "u =" << sygnalKontrolny
                          << "wartZad =" << wartZad
                          << "krok =" << krokOdebrany
-                         << "=> ARX y =" << y
+                         << "=> ARX y ="
                          << "| zsynchronizowane? =" << czyZsynchronizowane;
                 break;
             }
@@ -1058,7 +1055,7 @@ public:
                 qDebug() << obliczone;
                 sygnalKontrolny=odbiornik.getWyjsciePID();
                 wartoscZadana=odbiornik.getWartoscZadana();
-                wartoscProcesu=odbiornik.getWynik();
+                wartoscProcesu=model.krok(sygnalKontrolny);
                 odbiornik.sendData(wartoscProcesu,krok);
                 //Liczy lokalne wartosci po wysłaniu
                 wartoscZadanaLokalna=wartosc_lokalna.obliczWartosc(krok);
@@ -1069,9 +1066,9 @@ public:
             }
 
             else {
-                wartoscZadana=nadajnik.getWartoscZadana();
+                wartoscZadana = wartosc.obliczWartosc((krok));
+                sygnalKontrolny= kontroler.oblicz(wartoscZadana, nadajnik.getWynik(), 1.0);
                 wartoscProcesu=nadajnik.getWynik();
-                sygnalKontrolny=nadajnik.getWynikPID();
                 nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);
                 //Liczy lokalne wartosci po wysłaniu
                 wartoscZadanaLokalna=wartosc_lokalna.obliczWartosc(krok);
