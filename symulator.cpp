@@ -166,7 +166,7 @@ void Symulator::nextStep()
     uklad.inkrementujKrok();
     //uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
-                 ui->spinbox_I->value(),
+                 ui->spinbox_I->value()/10,
                  ui->spinbox_D->value(),
                  ui->spinbox_minimum->value(),
                  ui->spinbox_maksimum->value());
@@ -300,9 +300,17 @@ void Symulator::on_button_wczytaj_clicked()
 
 void Symulator::on_button_reset_clicked()
 {
-    if (uklad.getIsOnlineModeON() && !uklad.getTrybPracyInstancji()) {
+    if (uklad.getIsOnlineModeON()) {
+        uklad.synchronizujZapasoweObiekty();
+        if(!uklad.getTrybPracyInstancji()){
         uklad.getNadajnik()->sendReset();
+        uklad.getNadajnik()->resetNadajnik();
+        }
+        else{
+            uklad.getOdbiornik()->resetOdbiornik();
+        }
     }
+
     ui->button_start->setEnabled(true);
     ui->button_stop->setEnabled(false);
     ui->button_reset->setEnabled(false);
@@ -319,10 +327,10 @@ void Symulator::on_button_reset_clicked()
     rozmiar_wykresu_kontroler_max.clear();
     rozmiar_wykresu_suma_max.clear();
     rozmiar_wykresu_uchyb_max.clear();
-    if(!uklad.getIsOnlineModeON()){
+    //if(!uklad.getIsOnlineModeON()){
     uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
-                 ui->spinbox_I->value(),
+                 ui->spinbox_I->value()/10,
                  ui->spinbox_D->value(),
                  ui->spinbox_minimum->value(),
                  ui->spinbox_maksimum->value());
@@ -330,7 +338,8 @@ void Symulator::on_button_reset_clicked()
                      ui->spinbox_maksimumY->value(),
                      ui->spinbox_okres->value(),
                      ui->spinBox_wypelnienie->value());
-    }
+    //}
+    /*
     else if(uklad.getTrybPracyInstancji()){
         uklad.setARX(A,B,szum,delay);
     }
@@ -345,6 +354,7 @@ void Symulator::on_button_reset_clicked()
                          ui->spinbox_okres->value(),
                          ui->spinBox_wypelnienie->value());
     }
+    */
     ui->wykres->graph(0)->data()->clear();
     ui->wykres->graph(1)->data()->clear();
 
@@ -388,8 +398,11 @@ void Symulator::on_button_reset_clicked()
 void Symulator::on_button_start_clicked()
 {
     uklad.setCzyDziala(true);
-    if (uklad.getIsOnlineModeON() && !uklad.getTrybPracyInstancji()) {
-        uklad.getNadajnik()->sendCommand(true);
+    if(uklad.getIsOnlineModeON()){
+        uklad.synchronizujZapasoweObiekty();
+        if(!uklad.getTrybPracyInstancji()){
+            uklad.getNadajnik()->sendCommand(true);
+        }
     }
     ui->button_reset->setEnabled(true);
     ui->button_start->setEnabled(false);
@@ -398,7 +411,7 @@ void Symulator::on_button_start_clicked()
     if (!uklad.getIsOnlineModeON()) {  
         uklad.setARX(A, B, szum, delay);
         uklad.setPID(ui->spinbox_P->value(),
-                     ui->spinbox_I->value(),
+                     ui->spinbox_I->value()/10,
                      ui->spinbox_D->value(),
                      ui->spinbox_minimum->value(),
                      ui->spinbox_maksimum->value());
@@ -589,6 +602,8 @@ void Symulator::przejdzDoTrybuLokalnego()
     msgBox->setWindowModality(Qt::NonModal);  // <-- kluczowe
     msgBox->setAttribute(Qt::WA_DeleteOnClose); // <-- usunięcie po zamknięciu
     msgBox->show();
+
+    uklad.przejmijStanLokalny();
 
     // Odblokowanie GUI
     ui->groupBox_PID->show();

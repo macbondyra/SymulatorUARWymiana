@@ -189,6 +189,10 @@ public:
         u_hist = std::deque<double>(maxSize, 0.0);
         y_hist = std::deque<double>(maxSize, 0.0);
     }
+    double getSzum(){return sigma;}
+    int getDelay(){return opoznienie;}
+    std::vector<double> getA(){return A;}
+    std::vector<double> getB(){return B;}
 };
 
 template<typename T>
@@ -285,6 +289,8 @@ public:
     int get_rodzajLiczba() const { return (int) rodzaj; }
     double get_max() const { return max; }
     int get_okres() const { return okres; }
+    rodzajeWartosci get_rodzaj(){return rodzaj;}
+    int get_wypelnienie(){return wypelnienie;}
     void reset() { setWart(rodzajeWartosci::skok, 0.0, 0); }
 
 private:
@@ -410,7 +416,7 @@ public:
             dt = 1.0;
         }
 
-        double dtI = (ki != 0.0) ? 2.0 : dt;
+        double dtI = (ki != 0.0) ? 1.0 : dt;
         double dtD = (kd != 0.0) ? 0.5 : dt;
 
         blad = ustawWartosc - wartoscProcesu;
@@ -599,6 +605,12 @@ public:
         return czyTrybJednostronny;
     }
     bool getCzyZsynchronizowane(){return czyZsynchronizowane;}
+
+    void resetNadajnik(){
+        wynik=0;
+        wartoscZadana=0;
+        wynikPID=0;
+    }
 
 private:
     PIDController *kontroler;
@@ -805,6 +817,12 @@ public:
         }
         emit rozlaczono();
     }
+    void resetOdbiornik(){
+        wynik=0;
+        wartoscZadana=0;
+        wyjsciePID=0;
+        krok=0;
+    }
 signals:
     void startTimer();
     void stopTimer();
@@ -994,6 +1012,35 @@ public:
         wartosc.wczytajText(nazwaPlikuWartosc);
     }
     void inkrementujKrok() { krok++; }
+    void synchronizujZapasoweObiekty()
+    {
+        model_lokalny.setModel(model.getA(), model.getB(), model.getSzum(), model.getDelay());
+        kontroler_lokalny.setKontroler(kontroler.get_kp(), kontroler.get_ki(), kontroler.get_kd());
+        kontroler_lokalny.ustawLimity(kontroler.get_dolnyLimit(), kontroler.get_gornyLimit());
+        kontroler_lokalny.setFlagaPrzeciwnasyceniowa(true);
+        kontroler_lokalny.setTrybCalkowania(kontroler.getTrybCalkowania());
+        wartosc_lokalna.setWart(wartosc.get_rodzaj(), wartosc.get_max(), wartosc.get_okres(), wartosc.get_wypelnienie());
+    }
+    void przejmijStanLokalny(){
+        model.reset();
+        kontroler.reset();
+        wartosc.reset();
+
+        /*
+        model.setModel(model_lokalny.getA(), model_lokalny.getB(), model_lokalny.getSzum(), model_lokalny.getDelay());
+
+        kontroler.setKontroler(kontroler_lokalny.get_kp(), kontroler_lokalny.get_ki(), kontroler_lokalny.get_kd());
+        kontroler.ustawLimity(kontroler_lokalny.get_dolnyLimit(), kontroler_lokalny.get_gornyLimit());
+        kontroler.setFlagaPrzeciwnasyceniowa(true);
+        kontroler.setTrybCalkowania(kontroler_lokalny.getTrybCalkowania());
+
+        wartosc.setWart(wartosc_lokalna.get_rodzaj(), wartosc_lokalna.get_max(), wartosc_lokalna.get_okres(), wartosc_lokalna.get_wypelnienie());
+        */
+        wartoscZadana = wartoscZadanaLokalna;
+        sygnalKontrolny = sygnalKontrolnyLokalny;
+        wartoscProcesu = wartoscProcesuLokalna;
+
+    }
     double symulacja()
     {
         if (!isOnlineModeON) {
@@ -1014,9 +1061,9 @@ public:
                 wartoscProcesu=odbiornik.getWynik();
                 odbiornik.sendData(wartoscProcesu,krok);
                 //Liczy lokalne wartosci po wysłaniu
-                wartoscZadanaLokalna=wartosc.obliczWartosc(krok);
-                sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,1.0);
-                wartoscProcesuLokalna=model.krok(sygnalKontrolny);
+                wartoscZadanaLokalna=wartosc_lokalna.obliczWartosc(krok);
+                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,1.0);
+                wartoscProcesuLokalna=model_lokalny.krok(sygnalKontrolnyLokalny);
                 obliczone = wartoscProcesu;
                 return obliczone;
             }
@@ -1027,9 +1074,9 @@ public:
                 sygnalKontrolny=nadajnik.getWynikPID();
                 nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);
                 //Liczy lokalne wartosci po wysłaniu
-                wartoscZadanaLokalna=wartoscZadana;
-                sygnalKontrolnyLokalny=kontroler.oblicz(wartoscZadana,wartoscProcesu,1.0);
-                wartoscProcesuLokalna=model.krok(sygnalKontrolny);
+                wartoscZadanaLokalna=wartosc_lokalna.obliczWartosc(krok);
+                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadana,wartoscProcesu,1.0);
+                wartoscProcesuLokalna=model_lokalny.krok(sygnalKontrolnyLokalny);
                 obliczone=wartoscProcesu;
                 return obliczone;
             }
@@ -1044,6 +1091,12 @@ public:
         wartoscProcesu = 0.0;
         obliczone = 0.0;
         wartoscZadana = 0.0;
+        kontroler_lokalny.reset();
+        model_lokalny.reset();
+        wartosc_lokalna.reset();
+        wartoscZadanaLokalna = 0.0;
+        wartoscProcesuLokalna = 0.0;
+        sygnalKontrolnyLokalny = 0.0;
     }
 
     void resetPID() { kontroler.reset(); }
@@ -1091,6 +1144,9 @@ private:
     ARXModel model;
     PIDController kontroler;
     WartZadana wartosc;
+    ARXModel model_lokalny;
+    PIDController kontroler_lokalny;
+    WartZadana wartosc_lokalna;
     Nadajnik nadajnik;
     Odbiornik odbiornik;
     int krok = 0;
