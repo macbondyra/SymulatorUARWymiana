@@ -753,8 +753,8 @@ public:
         }
     }
     void disconnectSocket(){
-        if (clientSocket->state() == QAbstractSocket::ConnectedState ||
-            clientSocket->state() == QAbstractSocket::ConnectingState)
+        if ((clientSocket && clientSocket->state() == QAbstractSocket::ConnectedState) ||
+            (clientSocket && clientSocket->state() == QAbstractSocket::ConnectingState))
         {
             clientSocket->disconnectFromHost();
         }
