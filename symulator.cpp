@@ -611,6 +611,7 @@ void Symulator::przejdzDoTrybuLokalnego()
     ui->button_stop->show();
     ui->button_reset->show();
     ui->groupBox_ARX->show();
+    ui->statusbar->clearMessage();
 
     uklad.setIsOnlineModeON(false);
     uklad.setTrybPracyInstancji(false);
