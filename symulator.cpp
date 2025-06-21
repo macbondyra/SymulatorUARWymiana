@@ -301,7 +301,6 @@ void Symulator::on_button_wczytaj_clicked()
 void Symulator::on_button_reset_clicked()
 {
     if (uklad.getIsOnlineModeON()) {
-        uklad.synchronizujZapasoweObiekty();
         if(!uklad.getTrybPracyInstancji()){
         uklad.getNadajnik()->sendReset();
         uklad.getNadajnik()->resetNadajnik();
@@ -399,7 +398,6 @@ void Symulator::on_button_start_clicked()
 {
     uklad.setCzyDziala(true);
     if(uklad.getIsOnlineModeON()){
-        uklad.synchronizujZapasoweObiekty();
         if(!uklad.getTrybPracyInstancji()){
             uklad.getNadajnik()->sendCommand(true);
         }

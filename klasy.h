@@ -756,9 +756,7 @@ public:
         if (clientSocket->state() == QAbstractSocket::ConnectedState ||
             clientSocket->state() == QAbstractSocket::ConnectingState)
         {
-
             clientSocket->disconnectFromHost();
-
         }
     }
     void setModel(ARXModel *modelNew) { modelARX = modelNew; }
@@ -973,10 +971,13 @@ public:
         : nadajnik(nullptr, &kontroler, &krok, &wartosc)
         , odbiornik(nullptr, &model,&krok) {};
     ~UkladSterowania() {};
-    void setPID(double kp, double ki, double kd, double dolnyLimit = -1.0, double gornyLimit = 1.0)
+    void setPID(double kp, double ki, double kd,
+                double dolnyLimit = -1.0,
+                double gornyLimit = 1.0)
     {
-        kontroler.setKontroler(kp, ki, kd);
-        kontroler.ustawLimity(dolnyLimit, gornyLimit);
+        PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        c.setKontroler(kp, ki, kd);
+        c.ustawLimity(dolnyLimit, gornyLimit);
     }
 
     void setARX(const std::vector<double> &a,
@@ -984,14 +985,25 @@ public:
                 double szum = 0.01,
                 int opoznienie = 1)
     {
-        model.setModel(a, b, szum, opoznienie);
+        if (isOnlineModeON)
+            model.setModel(a, b, szum, opoznienie);
+        else
+            model_lokalny.setModel(a, b, szum, opoznienie);
     }
 
-    void setWartosc(rodzajeWartosci rodzaj, double max, int okres, int wyp)
+    void setWartosc(rodzajeWartosci rodzaj,
+                    double max,
+                    int okres,
+                    int wyp)
     {
-        wartosc.setWart(rodzaj, max, okres, wyp);
+        WartZadana &w = isOnlineModeON ? wartosc : wartosc_lokalna;
+        w.setWart(rodzaj, max, okres, wyp);
     }
-    void setFiltr(bool filtr) { kontroler.setFlagaPrzeciwnasyceniowa(filtr); }
+    void setFiltr(bool filtr)
+    {
+        PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        c.setFlagaPrzeciwnasyceniowa(filtr);
+    }
     void zapiszPlik(const std::string &nazwaPlikuARX,
                     const std::string &nazwaPlikuPID,
                     const std::string &nazwaPlikuWartosc)
@@ -1011,28 +1023,10 @@ public:
     void inkrementujKrok() { krok++; }
     void synchronizujZapasoweObiekty()
     {
-        model_lokalny.setModel(model.getA(), model.getB(), model.getSzum(), model.getDelay());
-        kontroler_lokalny.setKontroler(kontroler.get_kp(), kontroler.get_ki(), kontroler.get_kd());
-        kontroler_lokalny.ustawLimity(kontroler.get_dolnyLimit(), kontroler.get_gornyLimit());
-        kontroler_lokalny.setFlagaPrzeciwnasyceniowa(true);
-        kontroler_lokalny.setTrybCalkowania(kontroler.getTrybCalkowania());
-        wartosc_lokalna.setWart(wartosc.get_rodzaj(), wartosc.get_max(), wartosc.get_okres(), wartosc.get_wypelnienie());
+
     }
     void przejmijStanLokalny(){
-        model.reset();
-        kontroler.reset();
-        wartosc.reset();
 
-        /*
-        model.setModel(model_lokalny.getA(), model_lokalny.getB(), model_lokalny.getSzum(), model_lokalny.getDelay());
-
-        kontroler.setKontroler(kontroler_lokalny.get_kp(), kontroler_lokalny.get_ki(), kontroler_lokalny.get_kd());
-        kontroler.ustawLimity(kontroler_lokalny.get_dolnyLimit(), kontroler_lokalny.get_gornyLimit());
-        kontroler.setFlagaPrzeciwnasyceniowa(true);
-        kontroler.setTrybCalkowania(kontroler_lokalny.getTrybCalkowania());
-
-        wartosc.setWart(wartosc_lokalna.get_rodzaj(), wartosc_lokalna.get_max(), wartosc_lokalna.get_okres(), wartosc_lokalna.get_wypelnienie());
-        */
         wartoscZadana = wartoscZadanaLokalna;
         sygnalKontrolny = sygnalKontrolnyLokalny;
         wartoscProcesu = wartoscProcesuLokalna;
@@ -1042,9 +1036,9 @@ public:
     {
         if (!isOnlineModeON) {
             // lokalnie
-            wartoscZadana = wartosc.obliczWartosc(krok);
-            sygnalKontrolny = kontroler.oblicz(wartoscZadana, wartoscProcesu, 1.0);
-            wartoscProcesu = model.krok(sygnalKontrolny);
+            wartoscZadana = wartosc_lokalna.obliczWartosc(krok);
+            sygnalKontrolny = kontroler_lokalny.oblicz(wartoscZadana, wartoscProcesu, 1.0);
+            wartoscProcesu = model_lokalny.krok(sygnalKontrolny);
             obliczone = wartoscProcesu;
 
             return obliczone;
@@ -1099,24 +1093,80 @@ public:
     void resetPID() { kontroler.reset(); }
     void setTrybPracyInstancji(bool tryb) { this->trybPracyInstancji = tryb; }
     void setIsOnlineModeON(bool mode) { this->isOnlineModeON = mode; }
-    void setTrybCalkowania(TrybCalkowania mode) { kontroler.setTrybCalkowania(mode); }
+    void setTrybCalkowania(TrybCalkowania mode)
+    {
+        PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        c.setTrybCalkowania(mode);
+    }
 
-    TrybCalkowania getPIDMode() const { return kontroler.getTrybCalkowania(); }
+    TrybCalkowania getPIDMode() const {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.getTrybCalkowania();
+    }
 
-    int get_rodzajLiczba() const { return wartosc.get_rodzajLiczba(); }
-    double get_max() const { return wartosc.get_max(); }
-    double get_kp() const { return kontroler.get_kp(); }
-    double get_ki() const { return kontroler.get_ki(); }
-    double get_kd() const { return kontroler.get_kd(); }
-    double getCalka() const { return kontroler.getCalka(); }
-    double getBlad() const { return kontroler.getBlad(); }
-    double getWyjscie() const { return kontroler.getWyjscie(); }
-    double getPochodna() const { return kontroler.getPochodna(); }
-    double get_dolnyLimit() const { return kontroler.get_dolnyLimit(); }
-    double get_gornyLimit() const { return kontroler.get_gornyLimit(); }
-    std::string get_lastA() const { return model.get_lastA(); }
-    std::string get_lastB() const { return model.get_lastB(); }
-    int get_okres() const { return wartosc.get_okres(); }
+    int get_rodzajLiczba() const {
+        const WartZadana &w = isOnlineModeON ? wartosc : wartosc_lokalna;
+        return w.get_rodzajLiczba();
+    }
+    double get_max() const
+    {
+        const WartZadana &w = isOnlineModeON ? wartosc : wartosc_lokalna;
+        return w.get_max();
+    }
+    double get_kp() const
+    {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.get_kp();
+    }
+    double get_ki() const
+    {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.get_ki();
+    }
+    double get_kd() const
+    {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.get_kd();
+    }
+    double getCalka() const {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.getCalka();
+    }
+    double getBlad() const {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.getBlad();
+    }
+    double getWyjscie() const {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.getWyjscie();
+    }
+    double getPochodna() const {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.getPochodna();
+    }
+    double get_dolnyLimit() const {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.get_dolnyLimit();
+    }
+    double get_gornyLimit() const {
+        const PIDController &c = isOnlineModeON ? kontroler : kontroler_lokalny;
+        return c.get_gornyLimit();
+    }
+    std::string get_lastA() const
+    {
+        const ARXModel &m = isOnlineModeON ? model : model_lokalny;
+        return m.get_lastA();
+    }
+    std::string get_lastB() const
+    {
+        const ARXModel &m = isOnlineModeON ? model : model_lokalny;
+        return m.get_lastB();
+    }
+    int get_okres() const
+    {
+        const WartZadana &w = isOnlineModeON ? wartosc : wartosc_lokalna;
+        return w.get_okres();
+    }
     double get_wartoscZadana() const { return wartoscZadana; }
     bool getTrybPracyInstancji() { return trybPracyInstancji; }
     bool getIsOnlineModeON() { return isOnlineModeON; }
