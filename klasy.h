@@ -416,7 +416,7 @@ public:
             dt = 1.0;
         }
 
-        double dtI = (ki != 0.0) ? 1.0 : dt;
+        double dtI = (ki != 0.0) ? 2.0 : dt;
         double dtD = (kd != 0.0) ? 0.5 : dt;
 
         blad = ustawWartosc - wartoscProcesu;
@@ -434,8 +434,8 @@ public:
 
         bladPoprzedzajacy = blad;
 
-        double integralContribution = (integralMode == TrybCalkowania::PRE_SUM) ? calka
-                                                                                : (ki * calka);
+        double integralContribution =
+            (integralMode == TrybCalkowania::PRE_SUM) ? calka : (ki * calka);
 
         wyjscie = kp * blad + integralContribution + kd * pochodna;
 
