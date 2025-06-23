@@ -676,7 +676,7 @@ private slots:
             msgBox->setWindowTitle("Status");
             msgBox->setText("Rozłączono od ARX");
             msgBox->setStandardButtons(QMessageBox::Ok);
-            msgBox->setWindowModality(Qt::NonModal); // nie blokuje
+            msgBox->setWindowModality(Qt::WindowModal); // nie blokuje
             msgBox->setAttribute(Qt::WA_DeleteOnClose); // auto cleanup
             msgBox->show();
             connectionState = false;
