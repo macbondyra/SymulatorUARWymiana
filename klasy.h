@@ -324,79 +324,57 @@ public:
                   double dolnyLimit = -1.0,
                   double gornyLimit = 1.0,
                   TrybCalkowania mode = TrybCalkowania::POST_SUM)
-        : kp(kp)
-        , ki(ki)
-        , kd(kd)
-        , calka(0.0)
-        , bladPoprzedzajacy(0.0)
-        , dolnyLimit(dolnyLimit)
-        , gornyLimit(gornyLimit)
-        , flagaPrzeciwNasyceniowa(false)
-        , blad(0.0)
-        , pochodna(0.0)
-        , wyjscie(0.0)
-        , maxCalka(10.0)
-        , maxPochodna(10.0)
-        , integralMode(mode)
-
+        : kp(kp), ki(ki), kd(kd),
+        calka(0.0), bladPoprzedzajacy(0.0),
+        dolnyLimit(dolnyLimit), gornyLimit(gornyLimit),
+        flagaPrzeciwNasyceniowa(false),
+        blad(0.0), pochodna(0.0), wyjscie(0.0),
+        maxCalka(10.0), maxPochodna(10.0),
+        integralMode(mode)
     {}
 
     PIDController()
-        : kp(0.0)
-        , ki(0.0)
-        , kd(0.0)
-        , calka(0.0)
-        , bladPoprzedzajacy(0.0)
-        , dolnyLimit(-1.0)
-        , gornyLimit(1.0)
-        , flagaPrzeciwNasyceniowa(false)
-        , blad(0.0)
-        , pochodna(0.0)
-        , wyjscie(0.0)
-        , maxCalka(10.0)
-        , maxPochodna(10.0)
-        , integralMode(TrybCalkowania::POST_SUM)
-
+        : PIDController(0.0, 0.0, 0.0)
     {}
 
+    // GETTERY
     double get_kp() const { return kp; }
     double get_ki() const { return ki; }
     double get_kd() const { return kd; }
     double get_dolnyLimit() const { return dolnyLimit; }
     double get_gornyLimit() const { return gornyLimit; }
 
-    double getCalka() const
-    {
-        return (integralMode == TrybCalkowania::PRE_SUM) ? calka : ki * calka;
+    double getCalka() const {
+        return (integralMode == TrybCalkowania::PRE_SUM) ? (ki * calka) : (ki * calka);
     }
 
     double getBlad() const { return kp * blad; }
     double getPochodna() const { return kd * pochodna; }
     double getWyjscie() const { return wyjscie; }
+    TrybCalkowania getTrybCalkowania() const { return integralMode; }
 
-    void ustawLimity(double lower, double upper)
-    {
+    // SETTERY
+    void ustawLimity(double lower, double upper) {
         dolnyLimit = lower;
         gornyLimit = upper;
     }
 
-    void setKontroler(double _kp, double _ki, double _kd)
-    {
+    void setKontroler(double _kp, double _ki, double _kd) {
         kp = _kp;
         ki = _ki;
         kd = _kd;
     }
 
-    void setFlagaPrzeciwnasyceniowa(bool flag) { flagaPrzeciwNasyceniowa = flag; }
+    void setFlagaPrzeciwnasyceniowa(bool flag) {
+        flagaPrzeciwNasyceniowa = flag;
+    }
 
-    void setTrybCalkowania(TrybCalkowania mode)
-    {
+    void setTrybCalkowania(TrybCalkowania mode) {
         integralMode = mode;
         reset();
     }
 
-    void reset()
-    {
+    void reset() {
         calka = 0.0;
         bladPoprzedzajacy = 0.0;
         blad = 0.0;
@@ -405,39 +383,51 @@ public:
     }
 
     template<typename T>
-    T filtr(T value, T lower, T upper)
-    {
+    T filtr(T value, T lower, T upper) {
         return std::max(lower, std::min(value, upper));
     }
 
+    // ***** GŁÓWNA METODA OBLICZAJĄCA *****
     double oblicz(double ustawWartosc, double wartoscProcesu, double dt)
     {
         if (dt <= 0.0) {
             dt = 1.0;
         }
 
-        double dtI = (ki != 0.0) ? 2.0 : dt;
-        double dtD = (kd != 0.0) ? 0.5 : dt;
-
+        // Obliczenie błędu
         blad = ustawWartosc - wartoscProcesu;
 
-        if (integralMode == TrybCalkowania::PRE_SUM) {
-            calka += ki * blad * dtI;
-        } else {
-            calka += blad * dtI;
+        // ***** ANTI-WINDUP *****
+        bool moznaCalkowac = true;
+        if (flagaPrzeciwNasyceniowa) {
+            if ((wyjscie >= gornyLimit && blad > 0) ||
+                (wyjscie <= dolnyLimit && blad < 0)) {
+                moznaCalkowac = false;
+            }
+        }
+
+        // ***** CZĘŚĆ CAŁKUJĄCA *****
+        if (moznaCalkowac) {
+            if (integralMode == TrybCalkowania::PRE_SUM) {
+                calka += blad * dt;
+            } else {
+                calka += blad * dt;
+            }
         }
 
         calka = filtr(calka, -maxCalka, maxCalka);
 
-        pochodna = (blad - bladPoprzedzajacy) / dtD;
+        // ***** CZĘŚĆ RÓŻNICZKUJĄCA *****
+        pochodna = (blad - bladPoprzedzajacy) / dt;
         pochodna = filtr(pochodna, -maxPochodna, maxPochodna);
-
         bladPoprzedzajacy = blad;
 
-        double integralContribution =
-            (integralMode == TrybCalkowania::PRE_SUM) ? calka : (ki * calka);
+        // ***** SKŁADNIKI PID *****
+        double uP = kp * blad;
+        double uI = ki * calka;
+        double uD = kd * pochodna;
 
-        wyjscie = kp * blad + integralContribution + kd * pochodna;
+        wyjscie = uP + uI + uD;
 
         if (flagaPrzeciwNasyceniowa) {
             wyjscie = filtr(wyjscie, dolnyLimit, gornyLimit);
@@ -446,11 +436,10 @@ public:
         return wyjscie;
     }
 
-    void zapiszText(const std::string &filename)
-    {
+    // ZAPIS / ODCZYT KONFIGURACJI
+    void zapiszText(const std::string &filename) {
         std::ofstream ofs(filename);
-        if (!ofs)
-            return;
+        if (!ofs) return;
         ofs << kp << "\n" << ki << "\n" << kd << "\n";
         ofs << dolnyLimit << "\n" << gornyLimit << "\n";
         ofs << flagaPrzeciwNasyceniowa << "\n";
@@ -458,11 +447,9 @@ public:
         ofs << static_cast<int>(integralMode) << "\n";
     }
 
-    void wczytajText(const std::string &nazwaPliku)
-    {
+    void wczytajText(const std::string &nazwaPliku) {
         std::ifstream ifs(nazwaPliku);
-        if (!ifs)
-            return;
+        if (!ifs) return;
         int modeInt;
         ifs >> kp >> ki >> kd;
         ifs >> dolnyLimit >> gornyLimit;
@@ -471,8 +458,6 @@ public:
         ifs >> modeInt;
         integralMode = static_cast<TrybCalkowania>(modeInt);
     }
-
-    TrybCalkowania getTrybCalkowania() const { return integralMode; }
 };
 
 enum MessageType : qint8 {
