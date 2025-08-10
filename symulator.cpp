@@ -166,7 +166,7 @@ void Symulator::nextStep()
     uklad.inkrementujKrok();
     //uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
-                 ui->spinbox_I->value()/10,
+                 ui->spinbox_I->value()/10.f,
                  ui->spinbox_D->value(),
                  ui->spinbox_minimum->value(),
                  ui->spinbox_maksimum->value());
@@ -329,7 +329,7 @@ void Symulator::on_button_reset_clicked()
     //if(!uklad.getIsOnlineModeON()){
     uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
-                 ui->spinbox_I->value()/10,
+                 ui->spinbox_I->value()/10.f,
                  ui->spinbox_D->value(),
                  ui->spinbox_minimum->value(),
                  ui->spinbox_maksimum->value());
@@ -409,7 +409,7 @@ void Symulator::on_button_start_clicked()
     if (!uklad.getIsOnlineModeON()) {  
         uklad.setARX(A, B, szum, delay);
         uklad.setPID(ui->spinbox_P->value(),
-                     ui->spinbox_I->value()/10,
+                     ui->spinbox_I->value()/10.f,
                      ui->spinbox_D->value(),
                      ui->spinbox_minimum->value(),
                      ui->spinbox_maksimum->value());

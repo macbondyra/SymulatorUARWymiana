@@ -660,11 +660,8 @@ private slots:
                 czyZsynchronizowane=false;
             }
             // policz sygnał sterujący
-
-
             wynik = y;
-            qDebug() << "PID wyliczył u =";
-
+            qDebug() << "PID wyliczył u =";       
         } catch (const std::exception &e) {
             QMessageBox::critical(nullptr, "Błąd", QString("Wystąpił wyjątek: %1").arg(e.what()));
         }
@@ -1066,7 +1063,7 @@ public:
                 nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);
                 //Liczy lokalne wartosci po wysłaniu
                 wartoscZadanaLokalna=wartosc_lokalna.obliczWartosc(krok);
-                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadana,wartoscProcesu,1.0);
+                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,1.0);
                 wartoscProcesuLokalna=model_lokalny.krok(sygnalKontrolnyLokalny);
                 obliczone=wartoscProcesu;
                 return obliczone;
