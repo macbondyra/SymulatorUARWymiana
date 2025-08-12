@@ -416,7 +416,7 @@ public:
             dt = 1.0;
         }
 
-        double dtI = (ki != 0.0) ? 1.0 : dt;
+        double dtI = (ki != 0.0) ? 2.0 : dt;
         double dtD = (kd != 0.0) ? 0.5 : dt;
 
         blad = ustawWartosc - wartoscProcesu;
