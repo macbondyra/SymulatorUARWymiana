@@ -1034,7 +1034,7 @@ public:
         if (!isOnlineModeON) {
             // lokalnie
             wartoscZadana = wartosc_lokalna.obliczWartosc(krok);
-            sygnalKontrolny = kontroler_lokalny.oblicz(wartoscZadana, wartoscProcesu, 1.0);
+            sygnalKontrolny = kontroler_lokalny.oblicz(wartoscZadana, wartoscProcesu, dt);
             wartoscProcesu = model_lokalny.krok(sygnalKontrolny);
             obliczone = wartoscProcesu;
 
@@ -1050,7 +1050,7 @@ public:
                 odbiornik.sendData(wartoscProcesu,krok);
                 //Liczy lokalne wartosci po wysłaniu
                 wartoscZadanaLokalna=wartosc_lokalna.obliczWartosc(krok);
-                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,1.0);
+                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,dt);
                 wartoscProcesuLokalna=model_lokalny.krok(sygnalKontrolnyLokalny);
                 obliczone = wartoscProcesu;
                 return obliczone;
@@ -1058,12 +1058,12 @@ public:
 
             else {
                 wartoscZadana = wartosc.obliczWartosc((krok));
-                sygnalKontrolny= kontroler.oblicz(wartoscZadana, nadajnik.getWynik(), 1.0);
+                sygnalKontrolny= kontroler.oblicz(wartoscZadana, nadajnik.getWynik(), dt);
                 wartoscProcesu=nadajnik.getWynik();
                 nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);
                 //Liczy lokalne wartosci po wysłaniu
                 wartoscZadanaLokalna=wartosc_lokalna.obliczWartosc(krok);
-                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,1.0);
+                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,dt);
                 wartoscProcesuLokalna=model_lokalny.krok(sygnalKontrolnyLokalny);
                 obliczone=wartoscProcesu;
                 return obliczone;
@@ -1178,7 +1178,9 @@ public:
     bool getCzyDziala() const {
         return czyDziala;
     }
-
+    void setDt(double dtValue){
+        dt=dtValue;
+    }
 
     void setCzyDziala(bool wartosc) {
         czyDziala = wartosc;
@@ -1205,4 +1207,5 @@ private:
     bool trybPracyInstancji=false;
     bool isOnlineModeON = false;
     bool czyDziala =false;
+    double dt;
 };

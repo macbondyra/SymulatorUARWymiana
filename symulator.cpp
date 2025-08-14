@@ -162,6 +162,7 @@ void Symulator::nextStep()
 {
     appendSyncStatus();
     uklad.setInterval(timer->interval());
+    uklad.setDt(timer->interval() / 1000.0);
     obecnaWartosc = uklad.symulacja();
     uklad.inkrementujKrok();
     //uklad.setARX(A, B, szum, delay);
