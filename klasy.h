@@ -645,7 +645,7 @@ private slots:
             int krokOdbiornika;
             in >> y;
             in >> krokOdbiornika;
-            if(std::abs(krokOdbiornika - *krok) <= PROG_BLEDU){
+            /*if(std::abs(krokOdbiornika - *krok) <= PROG_BLEDU){
                 qDebug()<<"SYNCHRONIZACJA";
                 qDebug()<<"Krok odebrany"<<krokOdbiornika;
                 qDebug()<<"Krok lokalny"<<*krok;
@@ -658,7 +658,7 @@ private slots:
                 qDebug()<<"Wysyłam RESYNC";
                 sendResync();
                 czyZsynchronizowane=false;
-            }
+            }*/
             // policz sygnał sterujący
             wynik = y;
             qDebug() << "PID wyliczył u =";       
@@ -916,9 +916,9 @@ private slots:
                 krok = krokOdebrany;
 
                 // Teraz wywołujemy model ARX
-                if(czyTrybJednostronny){
+                //if(czyTrybJednostronny){
                     emit nextStep();
-                }
+                //}
                 qDebug() << "[Odbiornik] Odebrano MSG_CONTROL:"
                          << "u =" << sygnalKontrolny
                          << "wartZad =" << wartZad
