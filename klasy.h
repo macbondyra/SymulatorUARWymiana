@@ -879,9 +879,9 @@ private slots:
                 bool dzialaj;
                 in >> dzialaj;
                 czyDziala = dzialaj;
-                if (czyDziala && !czyTrybJednostronny)
-                    emit startTimer();
-                else
+                if (!czyDziala && !czyTrybJednostronny)
+                   // emit startTimer();
+               // else
                     emit stopTimer();
                 qDebug() << "[Odbiornik] Odebrano MSG_COMMAND:" << czyDziala;
                 break;
@@ -891,6 +891,9 @@ private slots:
                 int nowyInterval;
                 in >> nowyInterval;
                 odebranyInterval = nowyInterval;
+                if(!czyTrybJednostronny){
+                    odebranyInterval=odebranyInterval/2.0;
+                }
                 qDebug() << "[Odbiornik] Odebrano MSG_INTERVAL:" << odebranyInterval;
                 emit odebranoInterval();
                 break;
@@ -914,11 +917,13 @@ private slots:
                 wyjsciePID    = sygnalKontrolny;
                 wartoscZadana = wartZad;
                 krok = krokOdebrany;
-
+               // wynik=modelARX->krok(wyjsciePID);
+                //sendData(wynik,krok);
                 // Teraz wywołujemy model ARX
-                //if(czyTrybJednostronny){
+                emit startTimer();
+                if(czyTrybJednostronny){
                     emit nextStep();
-                //}
+                }
                 qDebug() << "[Odbiornik] Odebrano MSG_CONTROL:"
                          << "u =" << sygnalKontrolny
                          << "wartZad =" << wartZad
@@ -1043,15 +1048,12 @@ public:
         // w trybie online nic tu nie musisz robić – sloty sieciowe już wymieniają dane
         else {
             if (trybPracyInstancji == 1) {
-                qDebug() << obliczone;
                 sygnalKontrolny=odbiornik.getWyjsciePID();
                 wartoscZadana=odbiornik.getWartoscZadana();
                 wartoscProcesu=model.krok(sygnalKontrolny);
                 odbiornik.sendData(wartoscProcesu,krok);
+                //odbiornik.sendData(wartoscProcesu,krok);
                 //Liczy lokalne wartosci po wysłaniu
-                wartoscZadanaLokalna=wartosc_lokalna.obliczWartosc(krok);
-                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,dt);
-                wartoscProcesuLokalna=model_lokalny.krok(sygnalKontrolnyLokalny);
                 obliczone = wartoscProcesu;
                 return obliczone;
             }
@@ -1062,9 +1064,6 @@ public:
                 wartoscProcesu=nadajnik.getWynik();
                 nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);
                 //Liczy lokalne wartosci po wysłaniu
-                wartoscZadanaLokalna=wartosc_lokalna.obliczWartosc(krok);
-                sygnalKontrolnyLokalny=kontroler_lokalny.oblicz(wartoscZadanaLokalna,wartoscProcesuLokalna,dt);
-                wartoscProcesuLokalna=model_lokalny.krok(sygnalKontrolnyLokalny);
                 obliczone=wartoscProcesu;
                 return obliczone;
             }
