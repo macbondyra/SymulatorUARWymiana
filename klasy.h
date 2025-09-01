@@ -645,7 +645,7 @@ private slots:
             int krokOdbiornika;
             in >> y;
             in >> krokOdbiornika;
-            /*if(std::abs(krokOdbiornika - *krok) <= PROG_BLEDU){
+            if(std::abs(krokOdbiornika - *krok) <= PROG_BLEDU){
                 qDebug()<<"SYNCHRONIZACJA";
                 qDebug()<<"Krok odebrany"<<krokOdbiornika;
                 qDebug()<<"Krok lokalny"<<*krok;
@@ -658,7 +658,7 @@ private slots:
                 qDebug()<<"Wysyłam RESYNC";
                 sendResync();
                 czyZsynchronizowane=false;
-            }*/
+            }
             // policz sygnał sterujący
             wynik = y;
             qDebug() << "PID wyliczył u =";       
@@ -892,7 +892,7 @@ private slots:
                 in >> nowyInterval;
                 odebranyInterval = nowyInterval;
                 if(!czyTrybJednostronny){
-                    odebranyInterval=odebranyInterval/2.0;
+                    odebranyInterval=odebranyInterval*0.75;
                 }
                 qDebug() << "[Odbiornik] Odebrano MSG_INTERVAL:" << odebranyInterval;
                 emit odebranoInterval();
@@ -909,7 +909,7 @@ private slots:
                 } else {
                     czyZsynchronizowane = false;
                     qDebug() << "[Odbiornik] Rozbieżność kroków! Lokalny krok ="
-                             << krok << ", odebrany krokiem nadajnika ="
+                             << *krokUkladu << ", odebrany krokiem nadajnika ="
                              << krokOdebrany;
                 }
 
@@ -920,9 +920,13 @@ private slots:
                // wynik=modelARX->krok(wyjsciePID);
                 //sendData(wynik,krok);
                 // Teraz wywołujemy model ARX
-                emit startTimer();
+
+
                 if(czyTrybJednostronny){
                     emit nextStep();
+                }
+                else{
+                     emit startTimer();
                 }
                 qDebug() << "[Odbiornik] Odebrano MSG_CONTROL:"
                          << "u =" << sygnalKontrolny
@@ -952,7 +956,6 @@ private slots:
                 in>>wynikPidOdebrany;
                 *krokUkladu = krokOdebrany;
                 wyjsciePID=wynikPidOdebrany;
-                modelARX->reset();
                 break;
             }
             default:
@@ -1054,6 +1057,9 @@ public:
                 odbiornik.sendData(wartoscProcesu,krok);
                 //odbiornik.sendData(wartoscProcesu,krok);
                 //Liczy lokalne wartosci po wysłaniu
+                wartoscZadanaLokalna = wartosc_lokalna.obliczWartosc(krok);
+                sygnalKontrolnyLokalny = kontroler_lokalny.oblicz(wartoscZadanaLokalna, wartoscProcesuLokalna, dt);
+                wartoscProcesuLokalna = model_lokalny.krok(sygnalKontrolnyLokalny);
                 obliczone = wartoscProcesu;
                 return obliczone;
             }
@@ -1064,6 +1070,9 @@ public:
                 wartoscProcesu=nadajnik.getWynik();
                 nadajnik.sendControl(sygnalKontrolny,wartoscZadana,krok);
                 //Liczy lokalne wartosci po wysłaniu
+                wartoscZadanaLokalna = wartosc_lokalna.obliczWartosc(krok);
+                sygnalKontrolnyLokalny = kontroler_lokalny.oblicz(wartoscZadanaLokalna, wartoscProcesuLokalna, dt);
+                wartoscProcesuLokalna = model_lokalny.krok(sygnalKontrolnyLokalny);
                 obliczone=wartoscProcesu;
                 return obliczone;
             }
