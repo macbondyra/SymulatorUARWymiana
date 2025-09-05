@@ -945,7 +945,7 @@ private slots:
                 in>>odebranyTryb;
                 czyTrybJednostronny=odebranyTryb;
                 if(odebranyTryb==true){
-                    emit schowajInterval();
+                    emit schowajInterval(); //to też stopuje timer
                 }
                 break;
             }

@@ -167,7 +167,7 @@ void Symulator::nextStep()
     uklad.inkrementujKrok();
     //uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
-                 ui->spinbox_I->value(),
+                 ui->spinbox_I->value()/10.f,
                  ui->spinbox_D->value(),
                  ui->spinbox_minimum->value(),
                  ui->spinbox_maksimum->value());
@@ -330,7 +330,7 @@ void Symulator::on_button_reset_clicked()
     //if(!uklad.getIsOnlineModeON()){
     uklad.setARX(A, B, szum, delay);
     uklad.setPID(ui->spinbox_P->value(),
-                 ui->spinbox_I->value(),
+                 ui->spinbox_I->value()/10.f,
                  ui->spinbox_D->value(),
                  ui->spinbox_minimum->value(),
                  ui->spinbox_maksimum->value());
@@ -410,7 +410,7 @@ void Symulator::on_button_start_clicked()
     if (!uklad.getIsOnlineModeON()) {  
         uklad.setARX(A, B, szum, delay);
         uklad.setPID(ui->spinbox_P->value(),
-                     ui->spinbox_I->value(),
+                     ui->spinbox_I->value()/10.f,
                      ui->spinbox_D->value(),
                      ui->spinbox_minimum->value(),
                      ui->spinbox_maksimum->value());
@@ -547,6 +547,9 @@ void Symulator::on_button_online_clicked()
             ui->button_start->hide();
             ui->button_stop->hide();
             ui->button_reset->hide();
+            ui->label_interval->hide();
+            ui->label_ms->hide();
+            ui->spinbox_interval->hide();
             uklad.setTrybPracyInstancji(true);
         }
     }
@@ -612,6 +615,8 @@ void Symulator::przejdzDoTrybuLokalnego()
     ui->button_stop->show();
     ui->button_reset->show();
     ui->groupBox_ARX->show();
+    ui->label_interval->show();
+    ui->label_ms->show();
     ui->statusbar->clearMessage();
 
     uklad.setIsOnlineModeON(false);
