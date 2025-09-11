@@ -597,7 +597,7 @@ void Symulator::on_TestyOnline_clicked()
 void Symulator::przejdzDoTrybuLokalnego()
 {
     timer->stop();
-     if(uklad.getTrybPracyInstancji()){
+     if(uklad.getTrybPracyInstancji()&&!uklad.getOdbiornik()->getCzyTrybJednostronny()){
         ui->spinbox_interval->setValue(timer->interval()/0.75);
     }
     QMessageBox* msgBox = new QMessageBox(this);
