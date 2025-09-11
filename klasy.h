@@ -656,7 +656,7 @@ private slots:
                 qDebug()<<"Krok odebrany"<<krokOdbiornika;
                 qDebug()<<"Krok lokalny"<<*krok;
                 qDebug()<<"Wysyłam RESYNC";
-                sendResync();
+                //sendResync();
                 czyZsynchronizowane=false;
             }
             // policz sygnał sterujący
@@ -1217,3 +1217,4 @@ private:
     bool czyDziala =false;
     double dt;
 };
+
