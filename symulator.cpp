@@ -596,6 +596,9 @@ void Symulator::on_TestyOnline_clicked()
 void Symulator::przejdzDoTrybuLokalnego()
 {
     timer->stop();
+     if(uklad.getTrybPracyInstancji()){
+        ui->spinbox_interval->setValue(timer->interval()/0.75);
+    }
     QMessageBox* msgBox = new QMessageBox(this);
     msgBox->setIcon(QMessageBox::Information);
     msgBox->setWindowTitle("Rozłączono");
@@ -665,4 +668,5 @@ void Symulator::chowajInterval()
     ui->spinbox_interval->hide();
     timer->stop();
 }
+
 
