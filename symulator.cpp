@@ -64,7 +64,7 @@ Symulator::Symulator(QWidget *parent)
         ui->list_WartoscZadana->addItem(item);
     }
     connect(timer, SIGNAL(timeout()), this, SLOT(nextStep()));
-    timer->setInterval(100);
+    timer->setInterval(200);
     ui->button_stop->setEnabled(false);
     ui->button_reset->setEnabled(false);
     ui->spinbox_interval->setValue(timer->interval());
@@ -665,3 +665,4 @@ void Symulator::chowajInterval()
     ui->spinbox_interval->hide();
     timer->stop();
 }
+
