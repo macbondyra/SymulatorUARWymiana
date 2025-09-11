@@ -401,6 +401,7 @@ void Symulator::on_button_start_clicked()
     if(uklad.getIsOnlineModeON()){
         if(!uklad.getTrybPracyInstancji()){
             uklad.getNadajnik()->sendCommand(true);
+            uklad.getNadajnik()->sendInterval(timer->interval());
         }
     }
     ui->button_reset->setEnabled(true);
